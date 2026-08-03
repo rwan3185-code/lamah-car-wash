@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حجز موعد - مغسلة لمعة ونقاء</title>
+    <!-- استيراد خط عصرية وتصميمي (Cairo) من جوجل -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            box-sizing: border-box;
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 24px;
+            font-size: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            background-color: #fff;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        button[type="submit"] {
+            background-color: var(--primary);
+            color: white;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+
+        button[type="submit"]:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .sub-btn {
+            background-color: #f1f5f9;
+            color: var(--text-main);
+            margin-top: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .sub-btn:hover {
+            background-color: #e2e8f0;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2>حجز موعد غسيل سيارة</h2>
+        <form id="bookingForm">
+            <label>اسم العميل:</label>
+            <input type="text" id="customer_name" placeholder="أدخل اسمك الكريم" required>
+
+            <label>رقم الجوال:</label>
+            <input type="tel" id="customer_phone" placeholder="05xxxxxxxx" required>
+
+            <label>رقم لوحة السيارة:</label>
+            <input type="text" id="car_plate" placeholder="مثال: أ ب ج 1234" required>
+
+            <label>اختر الفرع:</label>
+            <select id="branch" required>
+                <option value="" disabled selected>اختر الفرع المطلوب</option>
+                <option value="ينبع البلد">ينبع البلد</option>
+                <option value="ينبع الصناعية / الهيئة">ينبع الصناعية / الهيئة</option>
+            </select>
+
+            <label>اختر الخدمة:</label>
+            <select id="service_name" required>
+                <option value="" disabled selected>اختر الخدمة المناسبة</option>
+                <option value="غسيل خارجي">غسيل خارجي</option>
+                <option value="غسيل داخلي وخارجي">غسيل داخلي وخارجي</option>
+                <option value="تلميع ساطع">تلميع ساطع</option>
+            </select>
+
+            <label>تاريخ الموعد:</label>
+            <input type="date" id="appointment_date" required>
+
+            <label>وقت الموعد (من 4 عصراً إلى 12 ليلاً):</label>
+            <input type="time" id="appointment_time" required>
+
+            <button type="submit">تأكيد الحجز</button>
+        </form>
+
+        <button class="sub-btn" onclick="window.location.href='subscription.html'">الانتقال لاشتراكات الباقات الشهرية</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBoOYPofBjLF8w9RwusNUVXf-ZiFgklx8c",
+            authDomain: "car-wash-a68b2.firebaseapp.com",
+            projectId: "car-wash-a68b2",
+            storageBucket: "car-wash-a68b2.firebasestorage.app",
+            messagingSenderId: "560347437788",
+            appId: "1:560347437788:web:e4071b760637a240577219",
+            measurementId: "G-4SNK4CLCR1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+            }
+        });
+
+        const form = document.getElementById('bookingForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const customerName = document.getElementById('customer_name').value;
+            const customerPhone = document.getElementById('customer_phone').value;
+            const carPlate = document.getElementById('car_plate').value;
+            const branch = document.getElementById('branch').value;
+            const serviceName = document.getElementById('service_name').value;
+            const appointmentDate = document.getElementById('appointment_date').value;
+            const appointmentTime = document.getElementById('appointment_time').value;
+
+            if (appointmentTime < "16:00" && appointmentTime > "00:00") {
+                alert('عذراً، أوقات العمل تبدأ من الساعة 4:00 عصراً وحتى 12:00 ليلاً.');
+                return;
+            }
+
+            try {
+                const qCheck = query(collection(db, "appointments"), where("appointment_date", "==", appointmentDate));
+                const existingBookings = await getDocs(qCheck);
+
+                if (existingBookings.size >= 9) {
+                    alert('عذراً، هذا اليوم مكتمل بالكامل (الحد الأقصى 9 حجوزات). يرجى اختيار تاريخ آخر.');
+                    return;
+                }
+
+                await addDoc(collection(db, "appointments"), {
+                    customer_name: customerName,
+                    customer_phone: customerPhone,
+                    car_plate: carPlate,
+                    branch: branch,
+                    service_name: serviceName,
+                    appointment_date: appointmentDate,
+                    appointment_time: appointmentTime,
+                    user_email: auth.currentUser ? auth.currentUser.email : "",
+                    status: "قيد الانتظار",
+                    createdAt: new Date()
+                });
+
+                alert('تم حجز الموعد بنجاح!');
+                window.location.href = 'confirmation.html';
+            } catch (error) {
+                console.error("خطأ أثناء الحفظ: ", error);
+                alert('خطأ: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

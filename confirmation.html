@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تأكيد الحجوزات - مغسلة لمعة ونقاء</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            box-sizing: border-box;
+            margin-top: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 24px;
+            font-size: 24px;
+        }
+
+        .booking-card {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            margin: 14px 0;
+            border-radius: 12px;
+            border-right: 5px solid var(--primary);
+            transition: transform 0.2s ease;
+        }
+
+        .booking-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .booking-card p {
+            margin: 8px 0;
+            color: #334155;
+            font-size: 14px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .nav-links a, .logout-btn {
+            flex: 1;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .nav-links a {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+
+        .nav-links a:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .logout-btn {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .logout-btn:hover {
+            background-color: #fecaca;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>حجوزاتي المؤكدة</h2>
+        <div id="bookingsList">
+            <p style="text-align: center; color: var(--text-muted);">جاري تحميل الحجوزات...</p>
+        </div>
+
+        <div class="nav-links">
+            <a href="booking.html">حجز موعد جديد</a>
+            <button class="logout-btn" id="logoutBtn">تسجيل الخروج</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBoOYPofBjLF8w9RwusNUVXf-ZiFgklx8c",
+            authDomain: "car-wash-a68b2.firebaseapp.com",
+            projectId: "car-wash-a68b2",
+            storageBucket: "car-wash-a68b2.firebasestorage.app",
+            messagingSenderId: "560347437788",
+            appId: "1:560347437788:web:e4071b760637a240577219",
+            measurementId: "G-4SNK4CLCR1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const listContainer = document.getElementById('bookingsList');
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+            } else {
+                try {
+                    const q = query(collection(db, "appointments"), where("user_email", "==", user.email));
+                    const querySnapshot = await getDocs(q);
+                    
+                    listContainer.innerHTML = "";
+                    
+                    if (querySnapshot.empty) {
+                        listContainer.innerHTML = "<p style='text-align: center; color: #64748b;'>لا توجد حجوزات سابقة.</p>";
+                        return;
+                    }
+
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        listContainer.innerHTML += `
+                            <div class="booking-card">
+                                <p><strong>اسم العميل:</strong> ${data.customer_name}</p>
+                                <p><strong>رقم الجوال:</strong> ${data.customer_phone}</p>
+                                <p><strong>رقم اللوحة:</strong> ${data.car_plate}</p>
+                                <p><strong>الفرع:</strong> <span style="color: #2563eb; font-weight: bold;">${data.branch || 'غير محدد'}</span></p>
+                                <p><strong>الخدمة / الباقة:</strong> ${data.service_name}</p>
+                                <p><strong>التاريخ:</strong> ${data.appointment_date} | <strong>الوقت:</strong> ${data.appointment_time}</p>
+                                <p><strong>الحالة:</strong> <span style="color: #16a34a; font-weight: bold;">${data.status}</span></p>
+                            </div>
+                        `;
+                    });
+                } catch (error) {
+                    console.error("خطأ في جلب الحجوزات: ", error);
+                    listContainer.innerHTML = "<p style='text-align: center; color: #dc2626;'>حدث خطأ أثناء تحميل الحجوزات.</p>";
+                }
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = 'login.html';
+            });
+        });
+    </script>
+</body>
+</html>

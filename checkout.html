@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إتمام الدفع - مغسلة لمعة ونقاء المتنقلة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --accent: #f59e0b;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 40px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), #1e293b);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .header p {
+            margin: 5px 0 0 0;
+            font-size: 13px;
+            color: #93c5fd;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: var(--primary);
+            border-bottom: 2px solid #eff6ff;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .summary-row.total {
+            font-weight: 800;
+            font-size: 17px;
+            color: var(--primary);
+            border-top: 1px dashed var(--border-color);
+            padding-top: 12px;
+            margin-top: 12px;
+        }
+
+        .payment-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .payment-method {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .payment-method:hover {
+            border-color: var(--primary-light);
+            background: #f8fafc;
+        }
+
+        .payment-method input {
+            margin-left: 12px;
+            accent-color: var(--primary);
+            width: 18px;
+            height: 18px;
+        }
+
+        .payment-method label {
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        /* تفاصيل التحويل البنكي */
+        .bank-details {
+            display: none;
+            margin-top: 15px;
+            padding: 14px;
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 13px;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .btn-pay {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(30, 58, 138, 0.3);
+            transition: background 0.2s;
+            text-align: center;
+        }
+
+        .btn-pay:hover {
+            background: #1e293b;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>إتمام عملية الدفع</h1>
+        <p>اختر وسيلة الدفع المتاحة لتأكيد طلبك</p>
+    </div>
+
+    <div class="container">
+        <!-- ملخص الطلب -->
+        <div class="card">
+            <h3>📋 ملخص تفاصيل الطلب</h3>
+            <div class="summary-row">
+                <span id="serviceTitle">جاري تحميل الخدمة...</span>
+                <span id="servicePrice">0.00 ر.س</span>
+            </div>
+            <div class="summary-row">
+                <span>رسوم الخدمة والزيارة المتنقلة</span>
+                <span>متضمنة</span>
+            </div>
+            <div class="summary-row total">
+                <span>الإجمالي المستحق</span>
+                <span id="totalPrice">0.00 ر.س</span>
+            </div>
+        </div>
+
+        <!-- طرق الدفع (Apple Pay أو تحويل بنكي فقط) -->
+        <div class="card">
+            <h3>💳 حدد طريقة الدفع</h3>
+            <div class="payment-options">
+                <div class="payment-method">
+                    <label>
+                        <input type="radio" name="payment" value="apple_pay" checked onclick="toggleBankInfo(false)">
+                        <span> Apple Pay (الدفع السريع)</span>
+                    </label>
+                </div>
+                <div class="payment-method">
+                    <label>
+                        <input type="radio" name="payment" value="bank_transfer" onclick="toggleBankInfo(true)">
+                        <span>🏦 التحويل البنكي المباشر</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- معلومات الحساب البنكي تظهر عند اختيار التحويل -->
+            <div id="bankInfoBox" class="bank-details">
+                <strong>حساباتنا البنكية للتحويل:</strong><br>
+                - مصرف الراجحي: <code>SA0380000000608010101019</code><br>
+                - بنك الإنماء: <code>SA9205000010203040506070</code><br>
+                <em>يرجى إتمام التحويل وإرفاق الإيصال أو حفظ العملية لتأكيد الطلب.</em>
+            </div>
+        </div>
+
+        <button type="button" class="btn-pay" id="confirmPayBtn">تأكيد ودفع المبلغ</button>
+        <a href="booking.html" class="back-link">← العودة لتعديل الحجز</a>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBoOYPofBjLF8w9RwusNUVXf-ZiFgklx8c",
+            authDomain: "car-wash-a68b2.firebaseapp.com",
+            projectId: "car-wash-a68b2",
+            storageBucket: "car-wash-a68b2.firebasestorage.app",
+            messagingSenderId: "560347437788",
+            appId: "1:560347437788:web:e4071b760637a240577219",
+            measurementId: "G-4SNK4CLCR1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // جلب تفاصيل الحجز المخزنة مؤقتاً
+        const bookingData = JSON.parse(localStorage.getItem('tempBooking')) || {
+            serviceName: "غسيل سيارة متنقل",
+            price: 50,
+            carType: "عادي",
+            date: "اليوم",
+            time: "حسب الموعد المحدد"
+        };
+
+        document.getElementById('serviceTitle').innerText = `${bookingData.serviceName} (${bookingData.carType})`;
+        document.getElementById('servicePrice').innerText = `${bookingData.price} ر.س`;
+        document.getElementById('totalPrice').innerText = `${bookingData.price} ر.س`;
+
+        window.toggleBankInfo = function(show) {
+            document.getElementById('bankInfoBox').style.display = show ? 'block' : 'none';
+        }
+
+        let currentUser = null;
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+            } else {
+                currentUser = { email: "guest@lamah.com" };
+            }
+        });
+
+        document.getElementById('confirmPayBtn').addEventListener('click', async () => {
+            const payBtn = document.getElementById('confirmPayBtn');
+            payBtn.disabled = true;
+            payBtn.innerText = "جاري إتمام الطلب وتوثيق الدفع...";
+
+            const selectedPayment = document.querySelector('input[name="payment"]:checked').value;
+
+            try {
+                // حفظ البيانات في قاعدة بيانات Firebase
+                await addDoc(collection(db, "appointments"), {
+                    user_email: currentUser.email,
+                    service_name: bookingData.serviceName,
+                    price: bookingData.price,
+                    car_type: bookingData.carType,
+                    date: bookingData.date,
+                    time: bookingData.time,
+                    payment_method: selectedPayment,
+                    status: "تم الدفع وتأكيد الموعد",
+                    created_at: new Date().toISOString()
+                });
+
+                localStorage.removeItem('tempBooking');
+                alert("تم إتمام العملية بنجاح! تم اعتماد طلبك.");
+                window.location.href = "confirmation.html";
+
+            } catch (error) {
+                console.error("خطأ أثناء الحفظ:", error);
+                alert("حدث خطأ، يرجى المحاولة مرة أخرى.");
+                payBtn.disabled = false;
+                payBtn.innerText = "تأكيد ودفع المبلغ";
+            }
+        });
+    </script>
+</body>
+</html>
