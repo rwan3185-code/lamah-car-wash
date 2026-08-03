@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم التجّار - مغسلة لمعة ونقاء</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            color: var(--primary);
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .logout-btn {
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background-color: #e2e8f0;
+            color: var(--text-main);
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .booking-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            margin: 14px 0;
+            border-radius: 12px;
+            border-right: 5px solid var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .booking-card p {
+            margin: 6px 0;
+            font-size: 14px;
+        }
+
+        .actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-complete {
+            background-color: #16a34a;
+            color: white;
+        }
+
+        .btn-cancel {
+            background-color: #dc2626;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-flex">
+            <h2>لوحة تحكم الحجوزات</h2>
+            <button class="logout-btn" id="logoutBtn">تسجيل الخروج</button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="filterBookings('all', this)">جميع الحجوزات</button>
+            <button class="tab-btn" onclick="filterBookings('upcoming', this)">القادمة</button>
+            <button class="tab-btn" onclick="filterBookings('completed', this)">السابقة / المكتملة</button>
+        </div>
+
+        <div id="adminBookingsList">
+            <p style="text-align: center; color: var(--text-muted);">جاري التحقق من الصلاحيات وتحميل الحجوزات...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBoOYPofBjLF8w9RwusNUVXf-ZiFgklx8c",
+            authDomain: "car-wash-a68b2.firebaseapp.com",
+            projectId: "car-wash-a68b2",
+            storageBucket: "car-wash-a68b2.firebasestorage.app",
+            messagingSenderId: "560347437788",
+            appId: "1:560347437788:web:e4071b760637a240577219",
+            measurementId: "G-4SNK4CLCR1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const ADMIN_EMAIL = "rwan3185@gmail.com"; // يجب أن يتطابق مع الإيميل في صفحة الدخول
+        const listContainer = document.getElementById('adminBookingsList');
+        let allBookings = [];
+
+        // حماية الصفحة: التأكد أن المستخدم هو التاجر فعلياً
+        onAuthStateChanged(auth, (user) => {
+            if (!user || user.email !== ADMIN_EMAIL) {
+                // إذا لم يكن مسجلاً أو لم يكن هو التاجر، يُحوّل لصفحة تسجيل الدخول
+                window.location.href = 'login.html';
+            } else {
+                fetchBookings();
+            }
+        });
+
+        async function fetchBookings() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "appointments"));
+                allBookings = [];
+                querySnapshot.forEach((document) => {
+                    allBookings.push({ id: document.id, ...document.data() });
+                });
+                displayBookings(allBookings);
+            } catch (error) {
+                listContainer.innerHTML = "<p style='text-align: center; color: #dc2626;'>حدث خطأ أثناء تحميل الحجوزات.</p>";
+            }
+        }
+
+        window.displayBookings = function(bookings) {
+            listContainer.innerHTML = "";
+            if (bookings.length === 0) {
+                listContainer.innerHTML = "<p style='text-align: center; color: var(--text-muted);'>لا توجد حجوزات متاحة حالياً.</p>";
+                return;
+            }
+
+            bookings.forEach((data) => {
+                listContainer.innerHTML += `
+                    <div class="booking-card">
+                        <p><strong>اسم العميل:</strong> ${data.customer_name || 'غير متوفر'}</p>
+                        <p><strong>رقم الجوال:</strong> ${data.customer_phone || 'غير متوفر'}</p>
+                        <p><strong>رقم اللوحة:</strong> ${data.car_plate || 'غير متوفر'}</p>
+                        <p><strong>الفرع:</strong> <span style="color: #2563eb; font-weight: bold;">${data.branch || 'غير محدد'}</span></p>
+                        <p><strong>الخدمة / الباقة:</strong> ${data.service_name || 'غير متوفر'}</p>
+                        <p><strong>التاريخ:</strong> ${data.appointment_date} | <strong>الوقت:</strong> ${data.appointment_time}</p>
+                        <p><strong>الحالة:</strong> <span style="color: #16a34a; font-weight: bold;">${data.status || 'مؤكد'}</span></p>
+                        <div class="actions">
+                            <button class="action-btn btn-complete" onclick="updateStatus('${data.id}', 'مكتملة')">تحديد كمكتملة</button>
+                            <button class="action-btn btn-cancel" onclick="updateStatus('${data.id}', 'ملغاة')">إلغاء الحجز</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.filterBookings = function(type, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const today = new Date().toISOString().split('T')[0];
+
+            if (type === 'upcoming') {
+                const filtered = allBookings.filter(b => b.appointment_date >= today && b.status !== 'ملغاة' && b.status !== 'مكتملة');
+                displayBookings(filtered);
+            } else if (type === 'completed') {
+                const filtered = allBookings.filter(b => b.status === 'مكتملة' || b.status === 'ملغاة' || b.appointment_date < today);
+                displayBookings(filtered);
+            } else {
+                displayBookings(allBookings);
+            }
+        }
+
+        window.updateStatus = async function(docId, newStatus) {
+            try {
+                const docRef = doc(db, "appointments", docId);
+                await updateDoc(docRef, { status: newStatus });
+                alert("تم تحديث حالة الحجز بنجاح!");
+                fetchBookings();
+            } catch (error) {
+                alert("فشل تحديث الحالة.");
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = 'login.html';
+            });
+        });
+    </script>
+</body>
+</html>
