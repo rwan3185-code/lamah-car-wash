@@ -76,7 +76,6 @@
             margin-bottom: 4px;
         }
 
-        /* تنسيق مربعات وبطاقات الباقات */
         .packages-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -141,7 +140,6 @@
             background-color: var(--primary-dark);
         }
 
-        /* نموذج الحجز (مخفي افتراضياً ويظهر عند اختيار باقة) */
         .hidden {
             display: none;
         }
@@ -230,7 +228,6 @@
             </div>
 
             <div class="packages-grid">
-                <!-- مربّع الباقة الشهرية -->
                 <div class="package-card" onclick="selectPackage('باقة شهرية (4 غسلات)')">
                     <i class="fa-solid fa-box-open"></i>
                     <h3>الباقة الشهرية الأساسية</h3>
@@ -238,8 +235,6 @@
                     <div class="price">مواعيد أسبوعية ثابتة</div>
                     <button class="btn-select-pkg">اختر الباقة</button>
                 </div>
-                
-                <!-- يمديك تضيفين مربعات باقات ثانية هنا مستقبلاً بسهولة -->
             </div>
 
             <button class="back-btn" onclick="window.location.href='index.html'">العودة للرئيسية</button>
@@ -264,6 +259,14 @@
                     <option value="" disabled selected>اختر الفرع المطلوب</option>
                     <option value="ينبع البلد">ينبع البلد</option>
                     <option value="ينبع الصناعية / الهيئة">ينبع الصناعية / الهيئة</option>
+                </select>
+
+                <!-- الخيار الجديد لنوع الغسيل -->
+                <label>نوع الغسيل:</label>
+                <select id="wash_type" required>
+                    <option value="" disabled selected>اختر نوع الغسيل</option>
+                    <option value="غسيل داخلي وخارجي">غسيل داخلي وخارجي</option>
+                    <option value="غسيل خارجي فقط">غسيل خارجي فقط</option>
                 </select>
 
                 <label>تاريخ بداية الاشتراك (أول غسلة):</label>
@@ -326,6 +329,7 @@
             const customerPhone = document.getElementById('customer_phone').value;
             const carPlate = document.getElementById('car_plate').value;
             const branch = document.getElementById('branch').value;
+            const washType = document.getElementById('wash_type').value;
             const startDate = document.getElementById('start_date').value;
             const appointmentTime = document.getElementById('appointment_time').value;
 
@@ -349,6 +353,7 @@
                     customer_phone: customerPhone,
                     car_plate: carPlate,
                     branch: branch,
+                    wash_type: washType,
                     service_name: chosenPackageName,
                     appointment_date: dateQuery,
                     appointment_time: appointmentTime,
