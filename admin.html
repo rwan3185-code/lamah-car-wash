@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - مغسلة لمعة ونقاء</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>لوحة تحكم الأدمن - مغسلة لمعة ونقاء</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --success: #16a34a;
-            --danger: #dc2626;
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --accent: #f59e0b;
             --bg-color: #f8fafc;
             --card-bg: #ffffff;
             --text-main: #1e293b;
             --text-muted: #64748b;
-            --border-color: #cbd5e1;
+            --border-color: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
         }
 
         body {
@@ -24,145 +25,203 @@
             color: var(--text-main);
             margin: 0;
             padding: 0;
-        }
-
-        /* شريط التنبيهات العلوي الثابت */
-        #alertBanner {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background-color: #dc2626;
-            color: white;
-            text-align: center;
-            padding: 12px;
-            font-weight: 700;
-            font-size: 15px;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-            z-index: 9999;
-            display: none; /* مخفي افتراضياً ولا يظهر إلا عند وجود حجز جديد */
-            animation: slideDown 0.3s ease-in-out;
-        }
-
-        @keyframes slideDown {
-            from { transform: translateY(-100%); }
-            to { transform: translateY(0); }
-        }
-
-        .page-wrapper {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            padding-bottom: 40px;
         }
 
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            margin-bottom: 20px;
-            margin-top: 10px;
+            background: linear-gradient(135deg, var(--primary), #1e293b);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2);
         }
 
-        h2 {
-            color: var(--primary);
+        .header h1 {
             margin: 0;
             font-size: 22px;
+            font-weight: 800;
         }
 
-        .btn-logout {
-            background-color: #fee2e2;
-            color: var(--danger);
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-family: 'Cairo', sans-serif;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background-color 0.2s;
+        .header p {
+            margin: 5px 0 0 0;
+            font-size: 13px;
+            color: #93c5fd;
         }
 
-        .btn-logout:hover {
-            background-color: #fecaca;
+        .container {
+            max-width: 1100px;
+            margin: 25px auto;
+            padding: 0 15px;
         }
 
-        .appointment-card {
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
             background: var(--card-bg);
-            border: 1px solid var(--border-color);
             padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-
-        .appointment-card p {
-            margin: 8px 0;
-            font-size: 15px;
-        }
-
-        .actions {
-            margin-top: 15px;
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
-            font-family: 'Cairo', sans-serif;
-            font-weight: 700;
-            cursor: pointer;
-            color: white;
-            transition: opacity 0.2s;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-        }
-
-        .btn-complete {
-            background-color: var(--success);
-        }
-
-        .btn-cancel {
-            background-color: var(--danger);
-        }
-
-        .no-data {
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
             text-align: center;
+        }
+
+        .stat-card h4 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
             color: var(--text-muted);
-            margin-top: 40px;
+        }
+
+        .stat-card span {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .card h3 {
+            margin-top: 0;
             font-size: 16px;
+            color: var(--primary);
+            border-bottom: 2px solid #eff6ff;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        th, td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .badge-pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .badge-sub {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .badge-pay {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
         }
     </style>
 </head>
 <body>
 
-    <!-- الشريط الأحمر الثابت أعلى الصفحة للتنبيهات -->
-    <div id="alertBanner">🔔 تنبيه جديد: تم استلام حجز جديد في النظام!</div>
-
-    <div class="page-wrapper">
-        <div class="header">
-            <h2>لوحة تحكم الأدمن</h2>
-            <button class="btn-logout" id="logoutBtn">تسجيل الخروج</button>
-        </div>
-
-        <div class="container" id="appointmentsContainer">
-            <p class="no-data">جاري تحميل الحجوزات...</p>
-        </div>
+    <div class="header">
+        <h1>لوحة تحكم المشرف - مغسلة لمعة ونقاء</h1>
+        <p>متابعة وحفظ الحجوزات والاشتراكات الشهرية</p>
     </div>
 
-    <!-- صوت التنبيه (تنبيه صوتي هادئ ومباشر عبر الويب) -->
-    <audio id="notifSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+    <div class="container">
+        <!-- إحصائيات سريعة -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h4>إجمالي الطلبات الواردة</h4>
+                <span id="totalOrdersCount">0</span>
+            </div>
+            <div class="stat-card">
+                <h4>الطلبات قيد الانتظار</h4>
+                <span id="pendingOrdersCount">0</span>
+            </div>
+        </div>
+
+        <!-- جدول الطلبات -->
+        <div class="card">
+            <h3>📋 سجل الحجوزات والاشتراكات النشطة</h3>
+            <div id="loadingMessage" class="loading">جاري جلب الطلبات من قاعدة البيانات...</div>
+            <div style="overflow-x: auto;">
+                <table id="ordersTable" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>العميل</th>
+                            <th>الجوال</th>
+                            <th>اللوحة</th>
+                            <th>الفرع</th>
+                            <th>نوع الخدمة / الباقة</th>
+                            <th>الحجم</th>
+                            <th>الإضافات</th>
+                            <th>المبلغ</th>
+                            <th>التاريخ</th>
+                            <th>الوقت</th>
+                            <th>طريقة الدفع</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <!-- سيتم تعبئة البيانات برمجياً -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <a href="index.html" class="back-link">← العودة للرئيسية</a>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, updateDoc, query } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBoOYPofBjLF8w9RwusNUVXf-ZiFgklx8c",
@@ -175,105 +234,72 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const ADMIN_EMAIL = "rwan3185@gmail.com";
-        let previousCount = null;
-
-        // حماية صفحة الأدمن
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                window.location.href = 'login.html';
-            } else if (user.email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
-                alert('عذراً، هذه الصفحة خاصة بالمسؤول فقط.');
-                window.location.href = 'index.html';
-            } else {
-                initRealtimeListener();
-            }
-        });
-
-        // المتابعة الحية للحجوزات (تحديث فوري + صوت + شريط أحمر)
-        function initRealtimeListener() {
-            const container = document.getElementById('appointmentsContainer');
-            const banner = document.getElementById('alertBanner');
-            const sound = document.getElementById('notifSound');
+        async function fetchAppointments() {
+            const tableBody = document.getElementById('ordersTableBody');
+            const loadingMsg = document.getElementById('loadingMessage');
+            const ordersTable = document.getElementById('ordersTable');
 
             try {
-                onSnapshot(collection(db, "appointments"), (querySnapshot) => {
-                    if (querySnapshot.empty) {
-                        container.innerHTML = '<p class="no-data">لا توجد حجوزات حالياً.</p>';
-                        previousCount = 0;
-                        return;
-                    }
+                // جلب البيانات مرتبة من الأحدث
+                const q = query(collection(db, "appointments"));
+                const querySnapshot = await getDocs(q);
 
-                    let allBookings = [];
-                    querySnapshot.forEach((docSnap) => {
-                        allBookings.push({ id: docSnap.id, ...docSnap.data() });
-                    });
-
-                    // التحقق إذا تم إضافة حجز جديد لإظهار الشريط الصوتي والمرئي
-                    if (previousCount !== null && allBookings.length > previousCount) {
-                        // إظهار الشريط الأحمر
-                        banner.style.display = 'block';
-                        // تشغيل الصوت
-                        sound.play().catch(e => console.log("متصفح المتصفح منع التشغيل التلقائي للصوت:", e));
-                        
-                        // إخفاء الشريط الأحمر تلقائياً بعد 6 ثوانٍ
-                        setTimeout(() => {
-                            banner.style.display = 'none';
-                        }, 6000);
-                    }
-                    previousCount = allBookings.length;
-
-                    // رسم وعرض الحجوزات
-                    let html = '';
-                    allBookings.forEach((data) => {
-                        html += `
-                            <div class="appointment-card">
-                                <p><strong>اسم العميل:</strong> ${data.name || data.customer_name || 'غير متوفر'}</p>
-                                <p><strong>رقم الجوال:</strong> ${data.phone || data.customer_phone || 'غير متوفر'}</p>
-                                <p><strong>رقم اللوحة:</strong> ${data.plate || data.car_plate || 'غير متوفر'}</p>
-                                <p><strong>الفرع:</strong> ${data.branch || 'غير متوفر'}</p>
-                                <p><strong>الخدمة / الباقة:</strong> ${data.service || data.service_name || 'غير متوفر'}</p>
-                                <p><strong>التاريخ والوقت:</strong> ${data.date || data.appointment_date || ''} | ${data.time || data.appointment_time || ''}</p>
-                                <p><strong>إيميل الحساب:</strong> ${data.userEmail || data.user_email || 'غير متوفر'}</p>
-                                <p><strong>الحالة:</strong> <span style="color: ${data.status === 'مكتملة' ? 'green' : (data.status === 'ملغي' ? 'red' : 'orange')}">${data.status || 'قيد الانتظار'}</span></p>
-                                
-                                <div class="actions">
-                                    <button class="btn btn-complete" onclick="updateStatus('${data.id}', 'مكتملة')">تحديد كمكتملة</button>
-                                    <button class="btn btn-cancel" onclick="updateStatus('${data.id}', 'ملغي')">إلغاء الحجز</button>
-                                </div>
-                            </div>
-                        `;
-                    });
-
-                    container.innerHTML = html;
+                let orders = [];
+                querySnapshot.forEach((doc) => {
+                    orders.push({ id: doc.id, ...doc.data() });
                 });
+
+                loadingMsg.style.display = 'none';
+
+                if (orders.length === 0) {
+                    loadingMsg.innerHTML = "لا توجد طلبات أو اشتراكات مسجلة حالياً.";
+                    loadingMsg.style.display = 'block';
+                    return;
+                }
+
+                ordersTable.style.display = 'table';
+                tableBody.innerHTML = '';
+
+                let pendingCount = 0;
+
+                orders.forEach(order => {
+                    if (order.status === "قيد الانتظار") pendingCount++;
+
+                    const isSubscription = order.service_name && order.service_name.includes("اشتراك");
+                    const serviceBadgeClass = isSubscription ? 'badge-sub' : 'badge-pay';
+                    const paymentLabel = order.payment_method === 'bank_transfer' ? 'تحويل بنكي' : 'Apple Pay';
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><strong>${order.name || 'عميل'}</strong></td>
+                        <td>${order.phone || '-'}</td>
+                        <td><code>${order.plate || '-'}</code></td>
+                        <td>${order.branch || '-'}</td>
+                        <td><span class="badge ${serviceBadgeClass}">${order.service_name || '-'}</span></td>
+                        <td>${order.car_size || '-'}</td>
+                        <td>${order.addons || 'لا توجد'}</td>
+                        <td><strong>${order.price || 0} ر.س</strong></td>
+                        <td>${order.date || '-'}</td>
+                        <td>${order.time || '-'}</td>
+                        <td><span class="badge badge-pay">${paymentLabel}</span></td>
+                        <td><span class="badge badge-pending">${order.status || 'قيد الانتظار'}</span></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                // تحديث عدادات الإحصائيات
+                document.getElementById('totalOrdersCount').innerText = orders.length;
+                document.getElementById('pendingOrdersCount').innerText = pendingCount;
+
             } catch (error) {
-                console.error("خطأ في جلب الحجوزات: ", error);
-                container.innerHTML = '<p class="no-data">حدث خطأ أثناء تحميل الحجوزات.</p>';
+                console.error("خطأ في جلب البيانات:", error);
+                loadingMsg.innerHTML = "حدث خطأ أثناء تحميل الطلبات، يرجى تحديث الصفحة.";
             }
         }
 
-        // دالة تحديث الحالة بدون أي رسائل OK
-        window.updateStatus = async function(docId, newStatus) {
-            try {
-                const docRef = doc(db, "appointments", docId);
-                await updateDoc(docRef, { status: newStatus });
-            } catch (error) {
-                console.error("خطأ في تحديث الحالة: ", error);
-            }
-        };
-
-        // زر تسجيل الخروج
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            signOut(auth).then(() => {
-                window.location.href = 'login.html';
-            }).catch((error) => {
-                console.error("خطأ أثناء تسجيل الخروج:", error);
-            });
-        });
+        fetchAppointments();
     </script>
 </body>
 </html>
