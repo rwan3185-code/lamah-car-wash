@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم الأدمن - مغسلة لمعة ونقاء</title>
+    <title>لوحة تحكم المشرف - مغسلة لمعة ونقاء</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -15,8 +15,9 @@
             --text-main: #1e293b;
             --text-muted: #64748b;
             --border-color: #e2e8f0;
-            --success: #10b981;
-            --danger: #ef4444;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #d97706;
         }
 
         body {
@@ -49,7 +50,7 @@
         }
 
         .container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 25px auto;
             padding: 0 15px;
         }
@@ -88,7 +89,6 @@
             padding: 20px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.03);
             border: 1px solid var(--border-color);
-            overflow-x: auto;
         }
 
         .card h3 {
@@ -119,6 +119,11 @@
             font-weight: 700;
         }
 
+        tr {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
         tr:hover {
             background-color: #f8fafc;
         }
@@ -131,19 +136,94 @@
             display: inline-block;
         }
 
-        .badge-pending {
-            background: #fef3c7;
-            color: #d97706;
+        .badge-pending { background: #fef3c7; color: var(--warning); }
+        .badge-complete { background: #dcfce7; color: var(--success); }
+        .badge-cancel { background: #fee2e2; color: var(--danger); }
+        .badge-sub { background: #dbeafe; color: #1d4ed8; }
+        .badge-pay { background: #e2e8f0; color: #334155; }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 11px;
+            cursor: pointer;
+            color: white;
+            transition: opacity 0.2s;
+            margin-left: 4px;
         }
 
-        .badge-sub {
-            background: #dbeafe;
-            color: #1d4ed8;
+        .btn:hover { opacity: 0.85; }
+        .btn-complete { background-color: var(--success); }
+        .btn-cancel { background-color: var(--danger); }
+
+        /* تنسيق النافذة المنبثقة لتفاصيل الطلب */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
         }
 
-        .badge-pay {
-            background: #e2e8f0;
-            color: #334155;
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #eff6ff;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-weight: 800;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 8px;
+        }
+
+        .detail-row span:first-child {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .detail-row span:last-child {
+            color: var(--text-main);
+            font-weight: 700;
         }
 
         .loading {
@@ -162,16 +242,14 @@
             font-weight: 600;
         }
 
-        .back-link:hover {
-            color: var(--primary);
-        }
+        .back-link:hover { color: var(--primary); }
     </style>
 </head>
 <body>
 
     <div class="header">
         <h1>لوحة تحكم المشرف - مغسلة لمعة ونقاء</h1>
-        <p>متابعة وحفظ الحجوزات والاشتراكات الشهرية</p>
+        <p>متابعة وإدارة الحجوزات والاشتراكات الشهرية</p>
     </div>
 
     <div class="container">
@@ -189,7 +267,7 @@
 
         <!-- جدول الطلبات -->
         <div class="card">
-            <h3>📋 سجل الحجوزات والاشتراكات النشطة</h3>
+            <h3>📋 سجل الحجوزات والاشتراكات (اضغط على أي طلب لعرض تفاصيله)</h3>
             <div id="loadingMessage" class="loading">جاري جلب الطلبات من قاعدة البيانات...</div>
             <div style="overflow-x: auto;">
                 <table id="ordersTable" style="display: none;">
@@ -201,16 +279,15 @@
                             <th>الفرع</th>
                             <th>نوع الخدمة / الباقة</th>
                             <th>الحجم</th>
-                            <th>الإضافات</th>
                             <th>المبلغ</th>
                             <th>التاريخ</th>
-                            <th>الوقت</th>
                             <th>طريقة الدفع</th>
                             <th>الحالة</th>
+                            <th>الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody id="ordersTableBody">
-                        <!-- سيتم تعبئة البيانات برمجياً -->
+                        <!-- تعبئة البيانات برمجياً -->
                     </tbody>
                 </table>
             </div>
@@ -219,9 +296,22 @@
         <a href="index.html" class="back-link">← العودة للرئيسية</a>
     </div>
 
+    <!-- نافذة تفاصيل الطلب المنبثقة -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3> تفاصيل الطلب الكاملة</h3>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <div id="modalBody">
+                <!-- تفاصيل الطلب تظهر هنا -->
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, query } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBoOYPofBjLF8w9RwusNUVXf-ZiFgklx8c",
@@ -236,24 +326,25 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        let allOrdersData = [];
+
         async function fetchAppointments() {
             const tableBody = document.getElementById('ordersTableBody');
             const loadingMsg = document.getElementById('loadingMessage');
             const ordersTable = document.getElementById('ordersTable');
 
             try {
-                // جلب البيانات مرتبة من الأحدث
                 const q = query(collection(db, "appointments"));
                 const querySnapshot = await getDocs(q);
 
-                let orders = [];
-                querySnapshot.forEach((doc) => {
-                    orders.push({ id: doc.id, ...doc.data() });
+                allOrdersData = [];
+                querySnapshot.forEach((document) => {
+                    allOrdersData.push({ id: document.id, ...document.data() });
                 });
 
                 loadingMsg.style.display = 'none';
 
-                if (orders.length === 0) {
+                if (allOrdersData.length === 0) {
                     loadingMsg.innerHTML = "لا توجد طلبات أو اشتراكات مسجلة حالياً.";
                     loadingMsg.style.display = 'block';
                     return;
@@ -264,14 +355,27 @@
 
                 let pendingCount = 0;
 
-                orders.forEach(order => {
-                    if (order.status === "قيد الانتظار") pendingCount++;
+                allOrdersData.forEach(order => {
+                    const status = order.status || "قيد الانتظار";
+                    if (status === "قيد الانتظار") pendingCount++;
 
                     const isSubscription = order.service_name && order.service_name.includes("اشتراك");
                     const serviceBadgeClass = isSubscription ? 'badge-sub' : 'badge-pay';
                     const paymentLabel = order.payment_method === 'bank_transfer' ? 'تحويل بنكي' : 'Apple Pay';
 
+                    let statusBadgeClass = 'badge-pending';
+                    if (status === "مكتملة") statusBadgeClass = 'badge-complete';
+                    if (status === "ملغي") statusBadgeClass = 'badge-cancel';
+
                     const row = document.createElement('tr');
+                    
+                    // عند الضغط على الصف تفتح تفاصيل الطلب (عدا الضغط على الأزرار)
+                    row.onclick = (e) => {
+                        if (e.target.tagName !== 'BUTTON') {
+                            showOrderDetails(order.id);
+                        }
+                    };
+
                     row.innerHTML = `
                         <td><strong>${order.name || 'عميل'}</strong></td>
                         <td>${order.phone || '-'}</td>
@@ -279,23 +383,74 @@
                         <td>${order.branch || '-'}</td>
                         <td><span class="badge ${serviceBadgeClass}">${order.service_name || '-'}</span></td>
                         <td>${order.car_size || '-'}</td>
-                        <td>${order.addons || 'لا توجد'}</td>
                         <td><strong>${order.price || 0} ر.س</strong></td>
                         <td>${order.date || '-'}</td>
-                        <td>${order.time || '-'}</td>
                         <td><span class="badge badge-pay">${paymentLabel}</span></td>
-                        <td><span class="badge badge-pending">${order.status || 'قيد الانتظار'}</span></td>
+                        <td><span class="badge ${statusBadgeClass}">${status}</span></td>
+                        <td>
+                            <button class="btn btn-complete" onclick="updateOrderStatus('${order.id}', 'مكتملة')">إنجاز</button>
+                            <button class="btn btn-cancel" onclick="updateOrderStatus('${order.id}', 'ملغي')">إلغاء</button>
+                        </td>
                     `;
                     tableBody.appendChild(row);
                 });
 
-                // تحديث عدادات الإحصائيات
-                document.getElementById('totalOrdersCount').innerText = orders.length;
+                document.getElementById('totalOrdersCount').innerText = allOrdersData.length;
                 document.getElementById('pendingOrdersCount').innerText = pendingCount;
 
             } catch (error) {
                 console.error("خطأ في جلب البيانات:", error);
                 loadingMsg.innerHTML = "حدث خطأ أثناء تحميل الطلبات، يرجى تحديث الصفحة.";
+            }
+        }
+
+        // دالة تحديث حالة الطلب (مكتملة / ملغي) في فايربيس
+        window.updateOrderStatus = async function(docId, newStatus) {
+            try {
+                const docRef = doc(db, "appointments", docId);
+                await updateDoc(docRef, { status: newStatus });
+                alert(`تم تحديث حالة الطلب إلى: ${newStatus}`);
+                fetchAppointments(); // إعادة تحميل الجدول للتحديث الفوري
+            } catch (error) {
+                console.error("خطأ في التحديث:", error);
+                alert("حدث خطأ أثناء تحديث الحالة.");
+            }
+        }
+
+        // دالة إظهار النافذة المنبثقة بالتفاصيل
+        window.showOrderDetails = function(orderId) {
+            const order = allOrdersData.find(o => o.id === orderId);
+            if (!order) return;
+
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="detail-row"><span>اسم العميل:</span> <span>${order.name || '-'}</span></div>
+                <div class="detail-row"><span>رقم الجوال:</span> <span>${order.phone || '-'}</span></div>
+                <div class="detail-row"><span>رقم اللوحة:</span> <span>${order.plate || '-'}</span></div>
+                <div class="detail-row"><span>الفرع:</span> <span>${order.branch || '-'}</span></div>
+                <div class="detail-row"><span>الخدمة / الباقة:</span> <span>${order.service_name || '-'}</span></div>
+                <div class="detail-row"><span>حجم السيارة:</span> <span>${order.car_size || '-'}</span></div>
+                <div class="detail-row"><span>الإضافات:</span> <span>${order.addons || 'لا توجد'}</span></div>
+                <div class="detail-row"><span>الإجمالي:</span> <span>${order.price || 0} ر.س</span></div>
+                <div class="detail-row"><span>التاريخ:</span> <span>${order.date || '-'}</span></div>
+                <div class="detail-row"><span>الوقت:</span> <span>${order.time || '-'}</span></div>
+                <div class="detail-row"><span>طريقة الدفع:</span> <span>${order.payment_method === 'bank_transfer' ? 'تحويل بنكي' : 'Apple Pay'}</span></div>
+                <div class="detail-row"><span>حالة الطلب:</span> <span>${order.status || 'قيد الانتظار'}</span></div>
+            `;
+
+            document.getElementById('orderModal').style.display = 'flex';
+        }
+
+        // إغلاق النافذة المنبثقة
+        window.closeModal = function() {
+            document.getElementById('orderModal').style.display = 'none';
+        }
+
+        // إغلاق النافذة عند الضغط خارجها
+        window.onclick = function(event) {
+            const modal = document.getElementById('orderModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
             }
         }
 
