@@ -121,6 +121,17 @@
             accent-color: var(--primary);
         }
 
+        .price-preview {
+            background: #eff6ff;
+            color: var(--primary);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
         .btn-submit {
             width: 100%;
             background: var(--primary);
@@ -160,7 +171,7 @@
 
     <div class="header">
         <h1>حجز موعد جديد</h1>
-        <p>املأ البيانات التالية واعتمد طلبك عبر صفحة الدفع</p>
+        <p>اختر نوع الخدمة وحجم سيارتك لتعرف السعر وتنتقل للدفع</p>
     </div>
 
     <div class="container">
@@ -188,38 +199,40 @@
 
             <!-- تفاصيل الخدمة وحجم السيارة والموعد -->
             <div class="card">
-                <h3>📅 تفاصيل الخدمة والموعد</h3>
+                <h3>📅 تفاصيل الخدمة والأسعار</h3>
 
-                <label>اختر الخدمة الرئيسية:</label>
-                <select id="serviceSelect" required>
-                    <option value="">اختر الخدمة</option>
-                    <option value="غسيل داخلي وخارجي" data-price="50">غسيل داخلي وخارجي - 50 ر.س</option>
-                    <option value="تلميع ساطع" data-price="120">تلميع ساطع - 120 ر.س</option>
-                    <option value="الباقات الشهرية (4 غسلات)" data-price="180">الباقات الشهرية (4 غسلات) - 180 ر.س</option>
+                <label>نوع الخدمة:</label>
+                <select id="serviceSelect" required onchange="calculateTotal()">
+                    <option value="">اختر الخدمة الرئيسية</option>
+                    <option value="غسيل داخلي وخارجي">الغسيل الداخلي والخارجي</option>
+                    <option value="غسيل خارجي">الغسيل الخارجي فقط</option>
                 </select>
 
                 <label>حجم السيارة:</label>
-                <select id="carSizeSelect" required>
-                    <option value="صغيرة (سدان)" data-extra="0">صغيرة (سدان) - بدون زيادة</option>
-                    <option value="متوسطة (جيب صغير)" data-extra="15">متوسطة (جيب صغير) - زيادة 15 ر.س</option>
-                    <option value="كبيرة (عائلية/فان)" data-extra="30">كبيرة (عائلية/فان) - زيادة 30 ر.س</option>
+                <select id="carSizeSelect" required onchange="calculateTotal()">
+                    <option value="">اختر حجم السيارة</option>
+                    <option value="الصغيرة">الصغيرة</option>
+                    <option value="الوسط">الوسط</option>
+                    <option value="الكبيرة">الكبيرة</option>
                 </select>
 
                 <label style="margin-top: 15px;">خدمات إضافية اختيارية:</label>
                 <div class="checkbox-group">
                     <label class="checkbox-label">
-                        <input type="checkbox" name="addons" value="تلبيس دعاسات" data-price="20"> تلبيس دعاسات (+20 ر.س)
+                        <input type="checkbox" name="addons" value="تلبيس دعاسات" data-price="5" onchange="calculateTotal()"> تلبيس دعاسات (5 ر.س)
                     </label>
                     <label class="checkbox-label">
-                        <input type="checkbox" name="addons" value="نانو واكس" data-price="35"> نانو واكس (+35 ر.س)
+                        <input type="checkbox" name="addons" value="نانو واكس" data-price="5" onchange="calculateTotal()"> نانو واكس (5 ر.س)
                     </label>
                 </div>
+
+                <div class="price-preview" id="pricePreviewText">السعر الإجمالي المتوقع: 0 ر.س</div>
 
                 <label>تاريخ الحجز:</label>
                 <input type="date" id="bookingDate" required>
 
                 <label>وقت الحجز (من 4 عصراً إلى 12 ليلاً):</label>
-                <input type="time" id="bookingTime" min="16:00" max="00:00" required>
+                <input type="time" id="bookingTime" required>
             </div>
 
             <button type="submit" class="btn-submit">الانتقال لصفحة الدفع لتأكيد الحجز</button>
@@ -228,48 +241,61 @@
     </div>
 
     <script>
-        // تحديد تاريخ اليوم كحد أدنى للحجز
+        // جدول الأسعار المعتمد من القائمة
+        const priceList = {
+            "غسيل داخلي وخارجي": { "الصغيرة": 25, "الوسط": 30, "الكبيرة": 35 },
+            "غسيل خارجي": { "الصغيرة": 15, "الوسط": 20, "الكبيرة": 25 }
+        };
+
+        function calculateTotal() {
+            const service = document.getElementById('serviceSelect').value;
+            const size = document.getElementById('carSizeSelect').value;
+            let basePrice = 0;
+
+            if (service && size && priceList[service] && priceList[service][size]) {
+                basePrice = priceList[service][size];
+            }
+
+            let addonsTotal = 0;
+            document.querySelectorAll('input[name="addons"]:checked').forEach(cb => {
+                addonsTotal += parseFloat(cb.getAttribute('data-price')) || 0;
+            });
+
+            const total = basePrice + addonsTotal;
+            document.getElementById('pricePreviewText').innerText = `السعر الإجمالي المتوقع: ${total} ر.س`;
+            return total;
+        }
+
+        // تحديد تاريخ اليوم كحد أدنى
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('bookingDate').min = today;
 
         document.getElementById('bookingForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const serviceDropdown = document.getElementById('serviceSelect');
-            const selectedServiceOption = serviceDropdown.options[serviceDropdown.selectedIndex];
-            
-            const sizeDropdown = document.getElementById('carSizeSelect');
-            const selectedSizeOption = sizeDropdown.options[sizeDropdown.selectedIndex];
+            const service = document.getElementById('serviceSelect').value;
+            const size = document.getElementById('carSizeSelect').value;
+            const finalPrice = calculateTotal();
 
-            const serviceName = serviceDropdown.value;
-            let basePrice = parseFloat(selectedServiceOption.getAttribute('data-price')) || 50;
-            let extraSizePrice = parseFloat(selectedSizeOption.getAttribute('data-extra')) || 0;
-            let carSizeName = sizeDropdown.value;
-
-            // حساب الإضافات الاختيارية إن وجدت
             let addonsList = [];
-            let addonsTotal = 0;
             document.querySelectorAll('input[name="addons"]:checked').forEach(cb => {
                 addonsList.push(cb.value);
-                addonsTotal += parseFloat(cb.getAttribute('data-price')) || 0;
             });
-
-            const totalPrice = basePrice + extraSizePrice + addonsTotal;
 
             const bookingDetails = {
                 name: document.getElementById('clientName').value,
                 phone: document.getElementById('clientPhone').value,
                 plate: document.getElementById('carPlate').value,
                 branch: document.getElementById('branchSelect').value,
-                serviceName: serviceName,
-                carSize: carSizeName,
+                serviceName: service,
+                carSize: size,
                 addons: addonsList.join(', ') || 'لا توجد',
-                price: totalPrice,
+                price: finalPrice,
                 date: document.getElementById('bookingDate').value,
                 time: document.getElementById('bookingTime').value
             };
 
-            // تخزين البيانات مؤقتاً والانتقال حصرياً لصفحة الدفع
+            // تخزين البيانات مؤقتاً والانتقال الإجباري لصفحة الدفع
             localStorage.setItem('tempBooking', JSON.stringify(bookingDetails));
             window.location.href = 'checkout.html';
         });
