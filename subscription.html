@@ -251,7 +251,7 @@
                 time: document.getElementById('startTime').value
             };
 
-            // تخزين البيانات مؤقتاً والانتقال حصرياً لصفحة الدفع
+            // تخزين البيانات والانتقال لصفحة الدفع
             localStorage.setItem('tempBooking', JSON.stringify(subscriptionDetails));
             window.location.href = 'checkout.html';
         });
