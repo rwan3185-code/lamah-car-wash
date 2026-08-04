@@ -114,7 +114,6 @@
             justify-content: space-between;
             font-size: 13px;
             margin-bottom: 6px;
-            cursor: pointer;
         }
 
         .addon-item label {
@@ -129,6 +128,7 @@
             width: 16px;
             height: 16px;
             accent-color: var(--primary);
+            cursor: pointer;
         }
 
         .payment-options {
@@ -158,6 +158,7 @@
             accent-color: var(--primary);
             width: 18px;
             height: 18px;
+            cursor: pointer;
         }
 
         .payment-method label {
@@ -233,11 +234,11 @@
                 <span id="basePriceDisplay">0.00 ر.س</span>
             </div>
             <div class="summary-row">
-                <span>حجم السيارة المختاره</span>
+                <span>حجم السيارة المختارة</span>
                 <span id="carSizeDisplay">-</span>
             </div>
 
-            <!-- إضافات اختيارية (تلبيس دعاسات ونانو واكس) -->
+            <!-- إضافات اختيارية -->
             <div class="addons-container">
                 <div class="addons-title">✨ خدمات إضافية اختيارية:</div>
                 <div class="addon-item">
@@ -320,11 +321,12 @@
 
         let basePrice = Number(bookingData.price) || 15;
 
+        // تعبئة البيانات وتحديث الإجمالي فوراً عند فتح الصفحة
         document.getElementById('serviceTitle').innerText = `${bookingData.serviceName}`;
         document.getElementById('carSizeDisplay').innerText = bookingData.carSize || "الصغيرة";
         document.getElementById('basePriceDisplay').innerText = `${basePrice} ر.س`;
-        updateTotal();
 
+        // دالة تحديث الحسابات والإجمالي
         window.updateTotal = function() {
             let addonsTotal = 0;
             if (document.getElementById('addonMats').checked) addonsTotal += 5;
@@ -334,8 +336,17 @@
             document.getElementById('totalPrice').innerText = `${finalTotal} ر.س`;
         }
 
+        // تشغيل الدالة فور تحميل الصفحة لضمان ظهور الإجمالي الصحيح
+        updateTotal();
+
+        // إظهار وإخفاء تفاصيل التحويل البنكي
         window.toggleBankInfo = function(show) {
-            document.getElementById('bankInfoBox').style.display = show ? 'block' : 'none';
+            const bankBox = document.getElementById('bankInfoBox');
+            if (show) {
+                bankBox.style.display = 'block';
+            } else {
+                bankBox.style.display = 'none';
+            }
         }
 
         let currentUser = null;
@@ -365,7 +376,6 @@
             const finalTotalPrice = basePrice + addonsTotal;
 
             try {
-                // حفظ البيانات في Firebase وتأكيد الحجز حصرياً بعد الدفع
                 await addDoc(collection(db, "appointments"), {
                     user_email: currentUser.email,
                     name: bookingData.name || "عميل",
