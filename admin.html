@@ -159,7 +159,7 @@
         .btn-complete { background-color: var(--success); }
         .btn-cancel { background-color: var(--danger); }
 
-        /* تنسيق النافذة المنبثقة لتفاصيل الطلب */
+        /* النافذة المنبثقة للتفاصيل */
         .modal {
             display: none;
             position: fixed;
@@ -180,7 +180,6 @@
             width: 90%;
             max-width: 500px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            animation: fadeIn 0.3s ease;
         }
 
         .modal-header {
@@ -216,15 +215,8 @@
             padding-bottom: 8px;
         }
 
-        .detail-row span:first-child {
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .detail-row span:last-child {
-            color: var(--text-main);
-            font-weight: 700;
-        }
+        .detail-row span:first-child { color: var(--text-muted); font-weight: 600; }
+        .detail-row span:last-child { color: var(--text-main); font-weight: 700; }
 
         .loading {
             text-align: center;
@@ -249,7 +241,7 @@
 
     <div class="header">
         <h1>لوحة تحكم المشرف - مغسلة لمعة ونقاء</h1>
-        <p>متابعة وإدارة الحجوزات والاشتراكات الشهرية</p>
+        <p>متابعة وإدارة الحجوزات والاشتراكات الشهرية لحظة بلحظة</p>
     </div>
 
     <div class="container">
@@ -267,8 +259,8 @@
 
         <!-- جدول الطلبات -->
         <div class="card">
-            <h3>📋 سجل الحجوزات والاشتراكات (اضغط على أي طلب لعرض تفاصيله)</h3>
-            <div id="loadingMessage" class="loading">جاري جلب الطلبات من قاعدة البيانات...</div>
+            <h3>📋 سجل الحجوزات والاشتراكات (تحديث فوري وتنبيه عند الطلب الجديد)</h3>
+            <div id="loadingMessage" class="loading">جاري الاتصال بقاعدة البيانات والاستماع للطلبات...</div>
             <div style="overflow-x: auto;">
                 <table id="ordersTable" style="display: none;">
                     <thead>
@@ -300,18 +292,16 @@
     <div id="orderModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3> تفاصيل الطلب الكاملة</h3>
+                <h3>📋 تفاصيل الطلب الكاملة</h3>
                 <button class="close-btn" onclick="closeModal()">×</button>
             </div>
-            <div id="modalBody">
-                <!-- تفاصيل الطلب تظهر هنا -->
-            </div>
+            <div id="modalBody"></div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc, query } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, updateDoc, query } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBoOYPofBjLF8w9RwusNUVXf-ZiFgklx8c",
@@ -327,97 +317,94 @@
         const db = getFirestore(app);
 
         let allOrdersData = [];
+        let isFirstLoad = true;
 
-        async function fetchAppointments() {
+        // استخدام onSnapshot للاستماع اللحظي والتنبيه فور وصول أي طلب جديد
+        const q = query(collection(db, "appointments"));
+        onSnapshot(q, (querySnapshot) => {
             const tableBody = document.getElementById('ordersTableBody');
             const loadingMsg = document.getElementById('loadingMessage');
             const ordersTable = document.getElementById('ordersTable');
 
-            try {
-                const q = query(collection(db, "appointments"));
-                const querySnapshot = await getDocs(q);
+            let newOrdersCount = allOrdersData.length;
+            allOrdersData = [];
 
-                allOrdersData = [];
-                querySnapshot.forEach((document) => {
-                    allOrdersData.push({ id: document.id, ...document.data() });
-                });
+            querySnapshot.forEach((document) => {
+                allOrdersData.push({ id: document.id, ...document.data() });
+            });
 
-                loadingMsg.style.display = 'none';
-
-                if (allOrdersData.length === 0) {
-                    loadingMsg.innerHTML = "لا توجد طلبات أو اشتراكات مسجلة حالياً.";
-                    loadingMsg.style.display = 'block';
-                    return;
-                }
-
-                ordersTable.style.display = 'table';
-                tableBody.innerHTML = '';
-
-                let pendingCount = 0;
-
-                allOrdersData.forEach(order => {
-                    const status = order.status || "قيد الانتظار";
-                    if (status === "قيد الانتظار") pendingCount++;
-
-                    const isSubscription = order.service_name && order.service_name.includes("اشتراك");
-                    const serviceBadgeClass = isSubscription ? 'badge-sub' : 'badge-pay';
-                    const paymentLabel = order.payment_method === 'bank_transfer' ? 'تحويل بنكي' : 'Apple Pay';
-
-                    let statusBadgeClass = 'badge-pending';
-                    if (status === "مكتملة") statusBadgeClass = 'badge-complete';
-                    if (status === "ملغي") statusBadgeClass = 'badge-cancel';
-
-                    const row = document.createElement('tr');
-                    
-                    // عند الضغط على الصف تفتح تفاصيل الطلب (عدا الضغط على الأزرار)
-                    row.onclick = (e) => {
-                        if (e.target.tagName !== 'BUTTON') {
-                            showOrderDetails(order.id);
-                        }
-                    };
-
-                    row.innerHTML = `
-                        <td><strong>${order.name || 'عميل'}</strong></td>
-                        <td>${order.phone || '-'}</td>
-                        <td><code>${order.plate || '-'}</code></td>
-                        <td>${order.branch || '-'}</td>
-                        <td><span class="badge ${serviceBadgeClass}">${order.service_name || '-'}</span></td>
-                        <td>${order.car_size || '-'}</td>
-                        <td><strong>${order.price || 0} ر.س</strong></td>
-                        <td>${order.date || '-'}</td>
-                        <td><span class="badge badge-pay">${paymentLabel}</span></td>
-                        <td><span class="badge ${statusBadgeClass}">${status}</span></td>
-                        <td>
-                            <button class="btn btn-complete" onclick="updateOrderStatus('${order.id}', 'مكتملة')">إنجاز</button>
-                            <button class="btn btn-cancel" onclick="updateOrderStatus('${order.id}', 'ملغي')">إلغاء</button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-
-                document.getElementById('totalOrdersCount').innerText = allOrdersData.length;
-                document.getElementById('pendingOrdersCount').innerText = pendingCount;
-
-            } catch (error) {
-                console.error("خطأ في جلب البيانات:", error);
-                loadingMsg.innerHTML = "حدث خطأ أثناء تحميل الطلبات، يرجى تحديث الصفحة.";
+            // تنبيه فوري إذا زاد عدد الطلبات وأصبحت الصفحة مفتوحة
+            if (!isFirstLoad && allOrdersData.length > newOrdersCount) {
+                alert("🔔 تنبيه: وصل طلب جديد أو اشتراك شهري الآن!");
             }
-        }
+            isFirstLoad = false;
 
-        // دالة تحديث حالة الطلب (مكتملة / ملغي) في فايربيس
+            loadingMsg.style.display = 'none';
+
+            if (allOrdersData.length === 0) {
+                loadingMsg.innerHTML = "لا توجد طلبات أو اشتراكات مسجلة حالياً.";
+                loadingMsg.style.display = 'block';
+                return;
+            }
+
+            ordersTable.style.display = 'table';
+            tableBody.innerHTML = '';
+
+            let pendingCount = 0;
+
+            allOrdersData.forEach(order => {
+                const status = order.status || "قيد الانتظار";
+                if (status === "قيد الانتظار") pendingCount++;
+
+                const isSubscription = order.service_name && order.service_name.includes("اشتراك");
+                const serviceBadgeClass = isSubscription ? 'badge-sub' : 'badge-pay';
+                const paymentLabel = order.payment_method === 'bank_transfer' ? 'تحويل بنكي' : 'Apple Pay';
+
+                let statusBadgeClass = 'badge-pending';
+                if (status === "مكتملة") statusBadgeClass = 'badge-complete';
+                if (status === "ملغي") statusBadgeClass = 'badge-cancel';
+
+                const row = document.createElement('tr');
+                row.onclick = (e) => {
+                    if (e.target.tagName !== 'BUTTON') {
+                        showOrderDetails(order.id);
+                    }
+                };
+
+                row.innerHTML = `
+                    <td><strong>${order.name || 'عميل'}</strong></td>
+                    <td>${order.phone || '-'}</td>
+                    <td><code>${order.plate || '-'}</code></td>
+                    <td>${order.branch || '-'}</td>
+                    <td><span class="badge ${serviceBadgeClass}">${order.service_name || '-'}</span></td>
+                    <td>${order.car_size || '-'}</td>
+                    <td><strong>${order.price || 0} ر.س</strong></td>
+                    <td>${order.date || '-'}</td>
+                    <td><span class="badge badge-pay">${paymentLabel}</span></td>
+                    <td><span class="badge ${statusBadgeClass}">${status}</span></td>
+                    <td>
+                        <button class="btn btn-complete" onclick="updateOrderStatus('${order.id}', 'مكتملة')">إنجاز</button>
+                        <button class="btn btn-cancel" onclick="updateOrderStatus('${order.id}', 'ملغي')">إلغاء</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            document.getElementById('totalOrdersCount').innerText = allOrdersData.length;
+            document.getElementById('pendingOrdersCount').innerText = pendingCount;
+        });
+
         window.updateOrderStatus = async function(docId, newStatus) {
             try {
                 const docRef = doc(db, "appointments", docId);
                 await updateDoc(docRef, { status: newStatus });
                 alert(`تم تحديث حالة الطلب إلى: ${newStatus}`);
-                fetchAppointments(); // إعادة تحميل الجدول للتحديث الفوري
             } catch (error) {
                 console.error("خطأ في التحديث:", error);
                 alert("حدث خطأ أثناء تحديث الحالة.");
             }
         }
 
-        // دالة إظهار النافذة المنبثقة بالتفاصيل
         window.showOrderDetails = function(orderId) {
             const order = allOrdersData.find(o => o.id === orderId);
             if (!order) return;
@@ -441,20 +428,16 @@
             document.getElementById('orderModal').style.display = 'flex';
         }
 
-        // إغلاق النافذة المنبثقة
         window.closeModal = function() {
             document.getElementById('orderModal').style.display = 'none';
         }
 
-        // إغلاق النافذة عند الضغط خارجها
         window.onclick = function(event) {
             const modal = document.getElementById('orderModal');
             if (event.target === modal) {
                 modal.style.display = 'none';
             }
         }
-
-        fetchAppointments();
     </script>
 </body>
 </html>
