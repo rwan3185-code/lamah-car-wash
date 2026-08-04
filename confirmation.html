@@ -74,7 +74,7 @@
             margin-top: 24px;
         }
 
-        .nav-links a, .logout-btn {
+        .nav-links a, .home-btn {
             flex: 1;
             text-decoration: none;
             padding: 12px;
@@ -98,13 +98,14 @@
             background-color: var(--primary-dark);
         }
 
-        .logout-btn {
-            background-color: #fee2e2;
-            color: #dc2626;
+        .home-btn {
+            background-color: #f1f5f9;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
         }
 
-        .logout-btn:hover {
-            background-color: #fecaca;
+        .home-btn:hover {
+            background-color: #e2e8f0;
         }
     </style>
 </head>
@@ -118,13 +119,13 @@
 
         <div class="nav-links">
             <a href="booking.html">حجز موعد جديد</a>
-            <button class="logout-btn" id="logoutBtn">تسجيل الخروج</button>
+            <button class="home-btn" onclick="window.location.href='index.html'">العودة للرئيسية</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
         import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -160,6 +161,11 @@
 
                     querySnapshot.forEach((doc) => {
                         const data = doc.data();
+                        
+                        // إظهار الخدمات الإضافية إن وجدت
+                        let addonsText = data.addons ? `<p><strong>الإضافات:</strong> ${data.addons}</p>` : '';
+                        let washTypeHtml = data.wash_type ? `<p><strong>نوع الغسيل:</strong> ${data.wash_type}</p>` : '';
+
                         listContainer.innerHTML += `
                             <div class="booking-card">
                                 <p><strong>اسم العميل:</strong> ${data.customer_name}</p>
@@ -167,6 +173,8 @@
                                 <p><strong>رقم اللوحة:</strong> ${data.car_plate}</p>
                                 <p><strong>الفرع:</strong> <span style="color: #2563eb; font-weight: bold;">${data.branch || 'غير محدد'}</span></p>
                                 <p><strong>الخدمة / الباقة:</strong> ${data.service_name}</p>
+                                ${washTypeHtml}
+                                ${addonsText}
                                 <p><strong>التاريخ:</strong> ${data.appointment_date} | <strong>الوقت:</strong> ${data.appointment_time}</p>
                                 <p><strong>الحالة:</strong> <span style="color: #16a34a; font-weight: bold;">${data.status}</span></p>
                             </div>
@@ -177,12 +185,6 @@
                     listContainer.innerHTML = "<p style='text-align: center; color: #dc2626;'>حدث خطأ أثناء تحميل الحجوزات.</p>";
                 }
             }
-        });
-
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            signOut(auth).then(() => {
-                window.location.href = 'login.html';
-            });
         });
     </script>
 </body>
