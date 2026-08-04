@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مغسلة لمعة ونقاء المتنقلة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #1e3a8a;
@@ -26,7 +27,7 @@
             padding-bottom: 90px;
         }
 
-        /* الهيدر   */
+        /* الهيدر */
         .hero-section {
             background: linear-gradient(135deg, var(--primary), #1e293b);
             color: white;
@@ -48,12 +49,12 @@
             width: 90px;
             height: 90px;
             border-radius: 16px;
-            object-fit: contain; /* لضمان ظهور اللوجو كاملاً بدون أي قص */
+            object-fit: contain;
             border: 3px solid white;
             background: white;
             box-shadow: 0 6px 15px rgba(0,0,0,0.2);
             margin-bottom: 10px;
-            padding: 4px; /* مساحة بسيطة داخل المربع لراحة العين */
+            padding: 4px;
         }
 
         .hero-section h1 {
@@ -136,13 +137,6 @@
             font-size: 18px;
             color: var(--text-main);
             font-weight: 700;
-        }
-
-        .section-title a {
-            color: var(--primary-light);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
         }
 
         .services-grid {
@@ -243,7 +237,7 @@
             color: var(--primary);
         }
 
-        .nav-item span.icon {
+        .nav-item span.icon, .nav-item i {
             font-size: 20px;
         }
 
@@ -267,7 +261,7 @@
 </head>
 <body>
 
-    <!-- الهيدر  مع اللوجو المربع الكامل -->
+    <!-- الهيدر مع اللوجو المربع الكامل -->
     <div class="hero-section">
         <div class="brand-box">
             <img src="logo.png" alt="شعار مغسلة لمعة ونقاء" onerror="this.style.display='none'">
@@ -334,10 +328,10 @@
             <span class="icon">⭐</span>
             <span>الاشتراكات</span>
         </a>
-      <a href="profile.html" style="text-decoration: none; color: inherit;">
-    <i class="fa-solid fa-user"></i>
-    <span>حسابي</span>
-</a>
+        <a href="profile.html" class="nav-item">
+            <i class="fa-solid fa-user"></i>
+            <span>حسابي</span>
+        </a>
     </div>
 
     <script type="module">
