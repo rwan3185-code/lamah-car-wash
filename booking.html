@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الحجز العادي - مغسلة لمعة ونقاء</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>حجز موعد - مغسلة لمعة ونقاء المتنقلة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --accent: #f59e0b;
             --bg-color: #f8fafc;
             --card-bg: #ffffff;
             --text-main: #1e293b;
             --text-muted: #64748b;
-            --border-color: #cbd5e1;
+            --border-color: #e2e8f0;
         }
 
         body {
@@ -21,260 +22,256 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-            padding-bottom: 90px;
+            padding: 0;
+            padding-bottom: 40px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), #1e293b);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .header p {
+            margin: 5px 0 0 0;
+            font-size: 13px;
+            color: #93c5fd;
         }
 
         .container {
-            width: 100%;
-            max-width: 480px;
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-            box-sizing: border-box;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 0 15px;
         }
 
-        h2 {
-            text-align: center;
-            color: var(--primary);
-            font-weight: 700;
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
             margin-bottom: 20px;
-            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: var(--primary);
+            border-bottom: 2px solid #eff6ff;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         label {
             display: block;
             margin-bottom: 6px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-main);
         }
 
         input, select {
             width: 100%;
-            padding: 12px 14px;
-            margin-bottom: 16px;
+            padding: 12px;
+            margin-bottom: 15px;
             border: 1px solid var(--border-color);
             border-radius: 10px;
             font-family: 'Cairo', sans-serif;
             font-size: 14px;
             background-color: #fff;
             box-sizing: border-box;
-            transition: all 0.3s ease;
         }
 
         input:focus, select:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
         }
 
-        /* تنسيق قسم الخدمات الإضافية */
-        .addons-section {
-            background: #f1f5f9;
-            border: 1px solid var(--border-color);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 16px;
-        }
-
-        .addons-section h4 {
-            margin: 0 0 10px 0;
-            font-size: 14px;
-            color: var(--primary-dark);
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
         .checkbox-label {
             display: flex;
             align-items: center;
-            font-weight: normal;
+            gap: 8px;
+            font-weight: 600;
             font-size: 13px;
-            margin-bottom: 8px;
             cursor: pointer;
         }
 
         .checkbox-label input {
-            width: auto;
-            margin-left: 10px;
-            margin-bottom: 0;
-            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            accent-color: var(--primary);
         }
 
-        button {
+        .btn-submit {
             width: 100%;
-            padding: 12px;
+            background: var(--primary);
+            color: white;
             border: none;
-            border-radius: 10px;
+            padding: 16px;
+            border-radius: 14px;
             font-family: 'Cairo', sans-serif;
             font-size: 16px;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
-            transition: background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 6px 15px rgba(30, 58, 138, 0.3);
+            transition: background 0.2s;
+            text-align: center;
         }
 
-        button[type="submit"] {
-            background-color: var(--primary);
-            color: white;
-            margin-top: 10px;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        .btn-submit:hover {
+            background: #1e293b;
         }
 
-        button[type="submit"]:hover {
-            background-color: var(--primary-dark);
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
         }
 
-        .back-btn {
-            background-color: #f1f5f9;
-            color: var(--text-main);
-            margin-top: 12px;
-            border: 1px solid var(--border-color);
-        }
-
-        .back-btn:hover {
-            background-color: #e2e8f0;
-        }
-
-        button:active {
-            transform: scale(0.98);
+        .back-link:hover {
+            color: var(--primary);
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>  حجز موعد غسيل</h2>
-        
-        <form id="bookingForm">
-            <label>اسم العميل:</label>
-            <input type="text" id="customer_name" placeholder="أدخل اسمك الكريم" required>
-
-            <label>رقم الجوال:</label>
-            <input type="tel" id="customer_phone" placeholder="05xxxxxxxx" required>
-
-            <label>رقم لوحة السيارة:</label>
-            <input type="text" id="car_plate" placeholder="مثال: أ ب ج 1234" required>
-
-            <label>اختر الفرع:</label>
-            <select id="branch" required>
-                <option value="" disabled selected>اختر الفرع المطلوب</option>
-                <option value="ينبع البلد">ينبع البلد</option>
-                <option value="ينبع الصناعية / الهيئة">ينبع الصناعية / الهيئة</option>
-            </select>
-
-            <label>اختر الخدمة الرئيسية:</label>
-            <select id="service_name" required>
-                <option value="" disabled selected>اختر الخدمة</option>
-                <option value="غسيل داخلي وخارجي">غسيل داخلي وخارجي</option>
-                <option value="غسيل خارجي فقط">غسيل خارجي فقط</option>
-            </select>
-
-            <!-- الخدمات الإضافية الخاصة بالحجز العادي فقط -->
-            <div class="addons-section">
-                <h4>خدمات إضافية اختيارية:</h4>
-                <label class="checkbox-label">
-                    <input type="checkbox" id="addon_mats" value="تلبيس دعاسات">
-                    تلبيس دعاسات
-                </label>
-                <label class="checkbox-label">
-                    <input type="checkbox" id="addon_nano" value="نانو واكس">
-                    نانو واكس
-                </label>
-            </div>
-
-            <label>تاريخ الحجز:</label>
-            <input type="date" id="appointment_date" required>
-
-            <label>وقت الحجز (من 4 عصراً إلى 12 ليلاً):</label>
-            <input type="time" id="appointment_time" required>
-
-            <button type="submit">تأكيد الحجز </button>
-        </form>
-
-        <button class="back-btn" onclick="window.location.href='index.html'">العودة للرئيسية</button>
+    <div class="header">
+        <h1>حجز موعد جديد</h1>
+        <p>املأ البيانات التالية واعتمد طلبك عبر صفحة الدفع</p>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+    <div class="container">
+        <form id="bookingForm">
+            <!-- بيانات العميل والسيارة -->
+            <div class="card">
+                <h3>🚗 بيانات العميل والسيارة</h3>
+                
+                <label>اسم العميل:</label>
+                <input type="text" id="clientName" placeholder="أدخل اسمك الكريم" required>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBoOYPofBjLF8w9RwusNUVXf-ZiFgklx8c",
-            authDomain: "car-wash-a68b2.firebaseapp.com",
-            projectId: "car-wash-a68b2",
-            storageBucket: "car-wash-a68b2.firebasestorage.app",
-            messagingSenderId: "560347437788",
-            appId: "1:560347437788:web:e4071b760637a240577219",
-            measurementId: "G-4SNK4CLCR1"
-        };
+                <label>رقم الجوال:</label>
+                <input type="tel" id="clientPhone" placeholder="05xxxxxxxx" required>
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+                <label>رقم اللوحة:</label>
+                <input type="text" id="carPlate" placeholder="مثال: أ ب ج 1234" required>
 
-        onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                window.location.href = 'login.html';
-            }
-        });
+                <label>اختر الفرع:</label>
+                <select id="branchSelect" required>
+                    <option value="">اختر الفرع المطلوب</option>
+                    <option value="ينبع الصناعية / الهيئة">ينبع الصناعية / الهيئة</option>
+                    <option value="ينبع البلد">ينبع البلد</option>
+                </select>
+            </div>
 
-        const form = document.getElementById('bookingForm');
-        form.addEventListener('submit', async (e) => {
+            <!-- تفاصيل الخدمة وحجم السيارة والموعد -->
+            <div class="card">
+                <h3>📅 تفاصيل الخدمة والموعد</h3>
+
+                <label>اختر الخدمة الرئيسية:</label>
+                <select id="serviceSelect" required>
+                    <option value="">اختر الخدمة</option>
+                    <option value="غسيل داخلي وخارجي" data-price="50">غسيل داخلي وخارجي - 50 ر.س</option>
+                    <option value="تلميع ساطع" data-price="120">تلميع ساطع - 120 ر.س</option>
+                    <option value="الباقات الشهرية (4 غسلات)" data-price="180">الباقات الشهرية (4 غسلات) - 180 ر.س</option>
+                </select>
+
+                <label>حجم السيارة:</label>
+                <select id="carSizeSelect" required>
+                    <option value="صغيرة (سدان)" data-extra="0">صغيرة (سدان) - بدون زيادة</option>
+                    <option value="متوسطة (جيب صغير)" data-extra="15">متوسطة (جيب صغير) - زيادة 15 ر.س</option>
+                    <option value="كبيرة (عائلية/فان)" data-extra="30">كبيرة (عائلية/فان) - زيادة 30 ر.س</option>
+                </select>
+
+                <label style="margin-top: 15px;">خدمات إضافية اختيارية:</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="addons" value="تلبيس دعاسات" data-price="20"> تلبيس دعاسات (+20 ر.س)
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="addons" value="نانو واكس" data-price="35"> نانو واكس (+35 ر.س)
+                    </label>
+                </div>
+
+                <label>تاريخ الحجز:</label>
+                <input type="date" id="bookingDate" required>
+
+                <label>وقت الحجز (من 4 عصراً إلى 12 ليلاً):</label>
+                <input type="time" id="bookingTime" min="16:00" max="00:00" required>
+            </div>
+
+            <button type="submit" class="btn-submit">الانتقال لصفحة الدفع لتأكيد الحجز</button>
+            <a href="index.html" class="back-link">← العودة للرئيسية</a>
+        </form>
+    </div>
+
+    <script>
+        // تحديد تاريخ اليوم كحد أدنى للحجز
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('bookingDate').min = today;
+
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const customerName = document.getElementById('customer_name').value;
-            const customerPhone = document.getElementById('customer_phone').value;
-            const carPlate = document.getElementById('car_plate').value;
-            const branch = document.getElementById('branch').value;
-            const serviceName = document.getElementById('service_name').value;
-            const appointmentDate = document.getElementById('appointment_date').value;
-            const appointmentTime = document.getElementById('appointment_time').value;
+            const serviceDropdown = document.getElementById('serviceSelect');
+            const selectedServiceOption = serviceDropdown.options[serviceDropdown.selectedIndex];
+            
+            const sizeDropdown = document.getElementById('carSizeSelect');
+            const selectedSizeOption = sizeDropdown.options[sizeDropdown.selectedIndex];
 
-            // جمع الخدمات الإضافية المحددة
-            let selectedAddons = [];
-            if (document.getElementById('addon_mats').checked) selectedAddons.push('تلبيس دعاسات');
-            if (document.getElementById('addon_nano').checked) selectedAddons.push('نانو واكس');
+            const serviceName = serviceDropdown.value;
+            let basePrice = parseFloat(selectedServiceOption.getAttribute('data-price')) || 50;
+            let extraSizePrice = parseFloat(selectedSizeOption.getAttribute('data-extra')) || 0;
+            let carSizeName = sizeDropdown.value;
 
-            if (appointmentTime < "16:00" && appointmentTime > "00:00") {
-                alert('عذراً، أوقات العمل تبدأ من الساعة 4:00 عصراً وحتى 12:00 ليلاً.');
-                return;
-            }
+            // حساب الإضافات الاختيارية إن وجدت
+            let addonsList = [];
+            let addonsTotal = 0;
+            document.querySelectorAll('input[name="addons"]:checked').forEach(cb => {
+                addonsList.push(cb.value);
+                addonsTotal += parseFloat(cb.getAttribute('data-price')) || 0;
+            });
 
-            try {
-                const qCheck = query(collection(db, "appointments"), where("appointment_date", "==", appointmentDate));
-                const existingBookings = await getDocs(qCheck);
+            const totalPrice = basePrice + extraSizePrice + addonsTotal;
 
-                if (existingBookings.size >= 9) {
-                    alert('عذراً، هذا اليوم مكتمل بالكامل (الحد الأقصى 9 حجوزات). يرجى اختيار تاريخ آخر.');
-                    return;
-                }
+            const bookingDetails = {
+                name: document.getElementById('clientName').value,
+                phone: document.getElementById('clientPhone').value,
+                plate: document.getElementById('carPlate').value,
+                branch: document.getElementById('branchSelect').value,
+                serviceName: serviceName,
+                carSize: carSizeName,
+                addons: addonsList.join(', ') || 'لا توجد',
+                price: totalPrice,
+                date: document.getElementById('bookingDate').value,
+                time: document.getElementById('bookingTime').value
+            };
 
-                await addDoc(collection(db, "appointments"), {
-                    customer_name: customerName,
-                    customer_phone: customerPhone,
-                    car_plate: carPlate,
-                    branch: branch,
-                    service_name: serviceName,
-                    addons: selectedAddons.length > 0 ? selectedAddons.join(', ') : 'بدون إضافات',
-                    appointment_date: appointmentDate,
-                    appointment_time: appointmentTime,
-                    user_email: auth.currentUser ? auth.currentUser.email : "",
-                    status: "حجز مؤكد",
-                    createdAt: new Date()
-                });
-
-                alert('تم تسجيل حجزك العادي بنجاح!');
-                window.location.href = 'confirmation.html';
-            } catch (error) {
-                console.error("خطأ أثناء الحفظ: ", error);
-                alert('حدث خطأ، حاول مرة أخرى.');
-            }
+            // تخزين البيانات مؤقتاً والانتقال حصرياً لصفحة الدفع
+            localStorage.setItem('tempBooking', JSON.stringify(bookingDetails));
+            window.location.href = 'checkout.html';
         });
     </script>
 </body>
