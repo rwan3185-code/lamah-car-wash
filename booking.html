@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الباقات الشهرية - مغسلة لمعة ونقاء</title>
+    <title>الحجز العادي - مغسلة لمعة ونقاء</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #2563eb;
@@ -28,11 +27,12 @@
             align-items: center;
             min-height: 100vh;
             box-sizing: border-box;
+            padding-bottom: 90px;
         }
 
         .container {
             width: 100%;
-            max-width: 600px;
+            max-width: 480px;
             background: var(--card-bg);
             padding: 30px;
             border-radius: 16px;
@@ -46,102 +46,6 @@
             font-weight: 700;
             margin-bottom: 20px;
             font-size: 24px;
-        }
-
-        .policy-box {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            border-right: 4px solid var(--primary);
-            padding: 14px;
-            margin-bottom: 25px;
-            border-radius: 10px;
-        }
-
-        .policy-box h4 {
-            margin: 0 0 8px 0;
-            color: var(--primary-dark);
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .policy-box ul {
-            margin: 0;
-            padding-right: 18px;
-            font-size: 12px;
-            color: #334155;
-            line-height: 1.6;
-        }
-
-        .policy-box li {
-            margin-bottom: 4px;
-        }
-
-        .packages-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .package-card {
-            background: #ffffff;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .package-card:hover {
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
-        }
-
-        .package-card i {
-            font-size: 30px;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-
-        .package-card h3 {
-            margin: 0 0 8px 0;
-            font-size: 18px;
-            color: var(--text-main);
-        }
-
-        .package-card p {
-            margin: 0 0 15px 0;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .package-card .price {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-
-        .btn-select-pkg {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 8px;
-            font-family: 'Cairo', sans-serif;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .btn-select-pkg:hover {
-            background-color: var(--primary-dark);
-        }
-
-        .hidden {
-            display: none;
         }
 
         label {
@@ -169,6 +73,37 @@
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        /* تنسيق قسم الخدمات الإضافية */
+        .addons-section {
+            background: #f1f5f9;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+        }
+
+        .addons-section h4 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: var(--primary-dark);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            font-weight: normal;
+            font-size: 13px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-label input {
+            width: auto;
+            margin-left: 10px;
+            margin-bottom: 0;
+            cursor: pointer;
         }
 
         button {
@@ -213,73 +148,56 @@
 <body>
 
     <div class="container">
-        <!-- قسم عرض مربعات الباقات -->
-        <div id="packagesView">
-            <h2>باقات العناية الشهرية</h2>
+        <h2>  حجز موعد غسيل</h2>
+        
+        <form id="bookingForm">
+            <label>اسم العميل:</label>
+            <input type="text" id="customer_name" placeholder="أدخل اسمك الكريم" required>
 
-            <div class="policy-box">
-                <h4>سياسة الاشتراك:</h4>
-                <ul>
-                    <li>يبدأ الاشتراك من أول غسلة وينتهي بعد إكمال 4 غسلات.</li>
-                    <li>يمكن استخدام الاشتراك لأكثر من سيارة.</li>
-                    <li>يحق للمغسلة تعديل المواعيد عند الظروف الطارئة مع إشعار العميل.</li>
-                    <li>عند التجديد، يحصل العميل على غسلة إضافية مجاناً (حسب العروض السارية).</li>
-                </ul>
+            <label>رقم الجوال:</label>
+            <input type="tel" id="customer_phone" placeholder="05xxxxxxxx" required>
+
+            <label>رقم لوحة السيارة:</label>
+            <input type="text" id="car_plate" placeholder="مثال: أ ب ج 1234" required>
+
+            <label>اختر الفرع:</label>
+            <select id="branch" required>
+                <option value="" disabled selected>اختر الفرع المطلوب</option>
+                <option value="ينبع البلد">ينبع البلد</option>
+                <option value="ينبع الصناعية / الهيئة">ينبع الصناعية / الهيئة</option>
+            </select>
+
+            <label>اختر الخدمة الرئيسية:</label>
+            <select id="service_name" required>
+                <option value="" disabled selected>اختر الخدمة</option>
+                <option value="غسيل داخلي وخارجي">غسيل داخلي وخارجي</option>
+                <option value="غسيل خارجي فقط">غسيل خارجي فقط</option>
+                <option value="تلميع شامل">تلميع شامل</option>
+            </select>
+
+            <!-- الخدمات الإضافية الخاصة بالحجز العادي فقط -->
+            <div class="addons-section">
+                <h4>خدمات إضافية اختيارية:</h4>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="addon_mats" value="تلبيس دعاسات">
+                    تلبيس دعاسات
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="addon_nano" value="نانو واكس">
+                    نانو واكس
+                </label>
             </div>
 
-            <div class="packages-grid">
-                <div class="package-card" onclick="selectPackage('باقة شهرية (4 غسلات)')">
-                    <i class="fa-solid fa-box-open"></i>
-                    <h3>الباقة الشهرية الأساسية</h3>
-                    <p>اشتراك 4 غسلات مع غسلة إضافية مجانية عند التجديد.</p>
-                    <div class="price">مواعيد أسبوعية ثابتة</div>
-                    <button class="btn-select-pkg">اختر الباقة</button>
-                </div>
-            </div>
+            <label>تاريخ الحجز:</label>
+            <input type="date" id="appointment_date" required>
 
-            <button class="back-btn" onclick="window.location.href='index.html'">العودة للرئيسية</button>
-        </div>
+            <label>وقت الحجز (من 4 عصراً إلى 12 ليلاً):</label>
+            <input type="time" id="appointment_time" required>
 
-        <!-- قسم نموذج تفاصيل الحجز (يظهر بعد اختيار الباقة) -->
-        <div id="formView" class="hidden">
-            <h2 id="selectedPackageTitle">تأكيد الاشتراك</h2>
-            
-            <form id="subscriptionForm">
-                <label>اسم المشترك:</label>
-                <input type="text" id="customer_name" placeholder="أدخل اسمك الكريم" required>
+            <button type="submit">تأكيد الحجز العادي</button>
+        </form>
 
-                <label>رقم الجوال:</label>
-                <input type="tel" id="customer_phone" placeholder="05xxxxxxxx" required>
-
-                <label>رقم لوحة السيارة:</label>
-                <input type="text" id="car_plate" placeholder="مثال: أ ب ج 1234" required>
-
-                <label>اختر الفرع:</label>
-                <select id="branch" required>
-                    <option value="" disabled selected>اختر الفرع المطلوب</option>
-                    <option value="ينبع البلد">ينبع البلد</option>
-                    <option value="ينبع الصناعية / الهيئة">ينبع الصناعية / الهيئة</option>
-                </select>
-
-                <!-- الخيار الجديد لنوع الغسيل -->
-                <label>نوع الغسيل:</label>
-                <select id="wash_type" required>
-                    <option value="" disabled selected>اختر نوع الغسيل</option>
-                    <option value="غسيل داخلي وخارجي">غسيل داخلي وخارجي</option>
-                    <option value="غسيل خارجي فقط">غسيل خارجي فقط</option>
-                </select>
-
-                <label>تاريخ بداية الاشتراك (أول غسلة):</label>
-                <input type="date" id="start_date" required>
-
-                <label>وقت الموعد الثابت أسبوعياً (من 4 عصراً إلى 12 ليلاً):</label>
-                <input type="time" id="appointment_time" required>
-
-                <button type="submit">تأكيد الاشتراك الشهري</button>
-            </form>
-            
-            <button class="back-btn" onclick="goBackToPackages()">الرجوع لاختيار الباقات</button>
-        </div>
+        <button class="back-btn" onclick="window.location.href='index.html'">العودة للرئيسية</button>
     </div>
 
     <script type="module">
@@ -307,21 +225,7 @@
             }
         });
 
-        let chosenPackageName = "";
-
-        window.selectPackage = function(packageName) {
-            chosenPackageName = packageName;
-            document.getElementById('selectedPackageTitle').textContent = "اشتراك: " + packageName;
-            document.getElementById('packagesView').classList.add('hidden');
-            document.getElementById('formView').classList.remove('hidden');
-        };
-
-        window.goBackToPackages = function() {
-            document.getElementById('formView').classList.add('hidden');
-            document.getElementById('packagesView').classList.remove('hidden');
-        };
-
-        const form = document.getElementById('subscriptionForm');
+        const form = document.getElementById('bookingForm');
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -329,9 +233,14 @@
             const customerPhone = document.getElementById('customer_phone').value;
             const carPlate = document.getElementById('car_plate').value;
             const branch = document.getElementById('branch').value;
-            const washType = document.getElementById('wash_type').value;
-            const startDate = document.getElementById('start_date').value;
+            const serviceName = document.getElementById('service_name').value;
+            const appointmentDate = document.getElementById('appointment_date').value;
             const appointmentTime = document.getElementById('appointment_time').value;
+
+            // جمع الخدمات الإضافية المحددة
+            let selectedAddons = [];
+            if (document.getElementById('addon_mats').checked) selectedAddons.push('تلبيس دعاسات');
+            if (document.getElementById('addon_nano').checked) selectedAddons.push('نانو واكس');
 
             if (appointmentTime < "16:00" && appointmentTime > "00:00") {
                 alert('عذراً، أوقات العمل تبدأ من الساعة 4:00 عصراً وحتى 12:00 ليلاً.');
@@ -339,12 +248,11 @@
             }
 
             try {
-                const dateQuery = startDate + " (بداية الاشتراك - يتكرر أسبوعياً)";
-                const qCheck = query(collection(db, "appointments"), where("appointment_date", "==", dateQuery));
+                const qCheck = query(collection(db, "appointments"), where("appointment_date", "==", appointmentDate));
                 const existingBookings = await getDocs(qCheck);
 
                 if (existingBookings.size >= 9) {
-                    alert('عذراً، هذا اليوم مكتمل بالكامل (الحد الأقصى 9 حجوزات). يرجى اختيار تاريخ بداية آخر.');
+                    alert('عذراً، هذا اليوم مكتمل بالكامل (الحد الأقصى 9 حجوزات). يرجى اختيار تاريخ آخر.');
                     return;
                 }
 
@@ -353,16 +261,16 @@
                     customer_phone: customerPhone,
                     car_plate: carPlate,
                     branch: branch,
-                    wash_type: washType,
-                    service_name: chosenPackageName,
-                    appointment_date: dateQuery,
+                    service_name: serviceName,
+                    addons: selectedAddons.length > 0 ? selectedAddons.join(', ') : 'بدون إضافات',
+                    appointment_date: appointmentDate,
                     appointment_time: appointmentTime,
                     user_email: auth.currentUser ? auth.currentUser.email : "",
-                    status: "اشتراك مفعل (4 غسلات)",
+                    status: "حجز مؤكد",
                     createdAt: new Date()
                 });
 
-                alert('تم تفعيل اشتراكك الشهري بنجاح وتثبيت الموعد الأسبوعي!');
+                alert('تم تسجيل حجزك العادي بنجاح!');
                 window.location.href = 'confirmation.html';
             } catch (error) {
                 console.error("خطأ أثناء الحفظ: ", error);
