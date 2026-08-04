@@ -82,12 +82,10 @@
             color: var(--text-main);
         }
 
-        .btn-back {
+        .btn {
             display: block;
             width: 100%;
             padding: 12px;
-            background-color: var(--primary);
-            color: white;
             border: none;
             border-radius: 10px;
             font-family: 'Cairo', sans-serif;
@@ -95,13 +93,27 @@
             font-weight: 700;
             cursor: pointer;
             text-decoration: none;
-            margin-top: 20px;
+            margin-top: 12px;
             box-sizing: border-box;
             transition: background-color 0.2s;
         }
 
+        .btn-back {
+            background-color: var(--primary);
+            color: white;
+        }
+
         .btn-back:hover {
             background-color: var(--primary-dark);
+        }
+
+        .btn-logout {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .btn-logout:hover {
+            background-color: #fecaca;
         }
     </style>
 </head>
@@ -128,12 +140,13 @@
             <p id="joinDate">جاري التحميل...</p>
         </div>
 
-        <a href="index.html" class="btn-back">العودة للرئيسية</a>
+        <a href="index.html" class="btn btn-back">العودة للرئيسية</a>
+        <button class="btn btn-logout" id="logoutBtn">تسجيل الخروج</button>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBoOYPofBjLF8w9RwusNUVXf-ZiFgklx8c",
@@ -150,13 +163,10 @@
 
         onAuthStateChanged(auth, (user) => {
             if (!user) {
-                // إذا لم يكن مسجل دخول، حوله لصفحة تسجيل الدخول
                 window.location.href = 'login.html';
             } else {
-                // عرض البريد الإلكتروني
                 document.getElementById('userEmail').textContent = user.email;
 
-                // استخراج تاريخ إنشاء الحساب من فايربيس وتنسيقه بشكل واضح
                 if (user.metadata && user.metadata.creationTime) {
                     const date = new Date(user.metadata.creationTime);
                     document.getElementById('joinDate').textContent = date.toLocaleDateString('ar-SA', {
@@ -168,6 +178,14 @@
                     document.getElementById('joinDate').textContent = "غير متوفر";
                 }
             }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = 'login.html';
+            }).catch((error) => {
+                console.error("خطأ أثناء تسجيل الخروج:", error);
+            });
         });
     </script>
 </body>
