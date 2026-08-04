@@ -151,16 +151,24 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
+        const ADMIN_EMAIL = "rwan3185@gmail.com"; // إيميل الأدمن المعتمد
+
         const form = document.getElementById('loginForm');
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
                 alert('تم تسجيل الدخول بنجاح!');
-                window.location.href = 'index.html';
+
+                // التحقق: إذا كان الإيميل هو إيميل الأدمن، يوجهه لصفحة لوحة التحكم مباشرة
+                if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'index.html'; // العملاء العاديين
+                }
             } catch (error) {
                 console.error("خطأ في تسجيل الدخول: ", error);
                 alert('خطأ في البريد أو كلمة المرور، تأكد من بياناتك.');
