@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم التجّار - مغسلة لمعة ونقاء</title>
+    <title>لوحة التحكم - مغسلة لمعة ونقاء</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #2563eb;
             --primary-dark: #1d4ed8;
+            --success: #16a34a;
+            --danger: #dc2626;
             --bg-color: #f8fafc;
             --card-bg: #ffffff;
             --text-main: #1e293b;
@@ -22,132 +23,146 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
+            padding: 0;
+        }
+
+        /* شريط التنبيهات العلوي الثابت */
+        #alertBanner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: #dc2626;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+            z-index: 9999;
+            display: none; /* مخفي افتراضياً ولا يظهر إلا عند وجود حجز جديد */
+            animation: slideDown 0.3s ease-in-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+
+        .page-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
             padding: 20px;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .header-flex {
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            margin-top: 10px;
         }
 
         h2 {
             color: var(--primary);
-            font-weight: 700;
             margin: 0;
+            font-size: 22px;
         }
 
-        .logout-btn {
-            background-color: #dc2626;
-            color: white;
+        .btn-logout {
+            background-color: #fee2e2;
+            color: var(--danger);
             border: none;
             padding: 8px 16px;
             border-radius: 8px;
             font-family: 'Cairo', sans-serif;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .logout-btn:hover {
-            background-color: #b91c1c;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            justify-content: center;
-        }
-
-        .tab-btn {
-            padding: 10px 20px;
-            border: none;
-            background-color: #e2e8f0;
-            color: var(--text-main);
-            font-family: 'Cairo', sans-serif;
             font-weight: 700;
-            border-radius: 8px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: background-color 0.2s;
         }
 
-        .tab-btn.active {
-            background-color: var(--primary);
-            color: white;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        .btn-logout:hover {
+            background-color: #fecaca;
         }
 
-        .booking-card {
+        .appointment-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            padding: 16px;
-            margin: 14px 0;
+            padding: 20px;
             border-radius: 12px;
-            border-right: 5px solid var(--primary);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
-        .booking-card p {
-            margin: 6px 0;
-            font-size: 14px;
+        .appointment-card p {
+            margin: 8px 0;
+            font-size: 15px;
         }
 
         .actions {
-            margin-top: 12px;
+            margin-top: 15px;
             display: flex;
             gap: 10px;
         }
 
-        .action-btn {
-            padding: 6px 12px;
-            border-radius: 6px;
+        .btn {
+            padding: 8px 16px;
             border: none;
+            border-radius: 8px;
             font-family: 'Cairo', sans-serif;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            font-size: 13px;
+            color: white;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
         }
 
         .btn-complete {
-            background-color: #16a34a;
-            color: white;
+            background-color: var(--success);
         }
 
         .btn-cancel {
-            background-color: #dc2626;
-            color: white;
+            background-color: var(--danger);
+        }
+
+        .no-data {
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: 40px;
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="header-flex">
-            <h2>لوحة تحكم الحجوزات</h2>
-            <button class="logout-btn" id="logoutBtn">تسجيل الخروج</button>
+    <!-- الشريط الأحمر الثابت أعلى الصفحة للتنبيهات -->
+    <div id="alertBanner">🔔 تنبيه جديد: تم استلام حجز جديد في النظام!</div>
+
+    <div class="page-wrapper">
+        <div class="header">
+            <h2>لوحة تحكم الأدمن</h2>
+            <button class="btn-logout" id="logoutBtn">تسجيل الخروج</button>
         </div>
 
-        <div class="tabs">
-            <button class="tab-btn active" onclick="filterBookings('all', this)">جميع الحجوزات</button>
-            <button class="tab-btn" onclick="filterBookings('upcoming', this)">القادمة</button>
-            <button class="tab-btn" onclick="filterBookings('completed', this)">السابقة / المكتملة</button>
-        </div>
-
-        <div id="adminBookingsList">
-            <p style="text-align: center; color: var(--text-muted);">جاري التحقق من الصلاحيات وتحميل الحجوزات...</p>
+        <div class="container" id="appointmentsContainer">
+            <p class="no-data">جاري تحميل الحجوزات...</p>
         </div>
     </div>
+
+    <!-- صوت التنبيه (تنبيه صوتي هادئ ومباشر عبر الويب) -->
+    <audio id="notifSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, updateDoc, doc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, updateDoc, query } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBoOYPofBjLF8w9RwusNUVXf-ZiFgklx8c",
@@ -164,113 +179,99 @@
         const db = getFirestore(app);
 
         const ADMIN_EMAIL = "rwan3185@gmail.com";
-        const listContainer = document.getElementById('adminBookingsList');
-        let allBookings = [];
-        let previousCount = null; // لمتابعة عدد الحجوزات للتنبيه
+        let previousCount = null;
 
-        // حماية الصفحة والتأكد من إيميل الأدمن
-        onAuthStateChanged(auth, (user) => {
-            if (!user || user.email !== ADMIN_EMAIL) {
+        // حماية صفحة الأدمن
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
                 window.location.href = 'login.html';
+            } else if (user.email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+                alert('عذراً، هذه الصفحة خاصة بالمسؤول فقط.');
+                window.location.href = 'index.html';
             } else {
-                initRealtimeBookings();
+                initRealtimeListener();
             }
         });
 
-        // استخدام onSnapshot لجلب الحجوزات وتحديثها وإرسال تنبيه فوراً عند إضافة حجز جديد
-        function initRealtimeBookings() {
+        // المتابعة الحية للحجوزات (تحديث فوري + صوت + شريط أحمر)
+        function initRealtimeListener() {
+            const container = document.getElementById('appointmentsContainer');
+            const banner = document.getElementById('alertBanner');
+            const sound = document.getElementById('notifSound');
+
             try {
                 onSnapshot(collection(db, "appointments"), (querySnapshot) => {
-                    allBookings = [];
-                    querySnapshot.forEach((document) => {
-                        allBookings.push({ id: document.id, ...document.data() });
+                    if (querySnapshot.empty) {
+                        container.innerHTML = '<p class="no-data">لا توجد حجوزات حالياً.</p>';
+                        previousCount = 0;
+                        return;
+                    }
+
+                    let allBookings = [];
+                    querySnapshot.forEach((docSnap) => {
+                        allBookings.push({ id: docSnap.id, ...docSnap.data() });
                     });
 
-                    // التحقق إذا تم إضافة حجز جديد لإصدار تنبيه
+                    // التحقق إذا تم إضافة حجز جديد لإظهار الشريط الصوتي والمرئي
                     if (previousCount !== null && allBookings.length > previousCount) {
-                        alert("🔔 تنبيه: تم استلام حجز جديد!");
+                        // إظهار الشريط الأحمر
+                        banner.style.display = 'block';
+                        // تشغيل الصوت
+                        sound.play().catch(e => console.log("متصفح المتصفح منع التشغيل التلقائي للصوت:", e));
+                        
+                        // إخفاء الشريط الأحمر تلقائياً بعد 6 ثوانٍ
+                        setTimeout(() => {
+                            banner.style.display = 'none';
+                        }, 6000);
                     }
                     previousCount = allBookings.length;
 
-                    // عرض الحجوزات حسب التاب النشط حالياً
-                    const activeTab = document.querySelector('.tab-btn.active');
-                    if (activeTab && activeTab.textContent.includes('القادمة')) {
-                        filterBookings('upcoming', activeTab);
-                    } else if (activeTab && activeTab.textContent.includes('السابقة')) {
-                        filterBookings('completed', activeTab);
-                    } else {
-                        displayBookings(allBookings);
-                    }
+                    // رسم وعرض الحجوزات
+                    let html = '';
+                    allBookings.forEach((data) => {
+                        html += `
+                            <div class="appointment-card">
+                                <p><strong>اسم العميل:</strong> ${data.name || data.customer_name || 'غير متوفر'}</p>
+                                <p><strong>رقم الجوال:</strong> ${data.phone || data.customer_phone || 'غير متوفر'}</p>
+                                <p><strong>رقم اللوحة:</strong> ${data.plate || data.car_plate || 'غير متوفر'}</p>
+                                <p><strong>الفرع:</strong> ${data.branch || 'غير متوفر'}</p>
+                                <p><strong>الخدمة / الباقة:</strong> ${data.service || data.service_name || 'غير متوفر'}</p>
+                                <p><strong>التاريخ والوقت:</strong> ${data.date || data.appointment_date || ''} | ${data.time || data.appointment_time || ''}</p>
+                                <p><strong>إيميل الحساب:</strong> ${data.userEmail || data.user_email || 'غير متوفر'}</p>
+                                <p><strong>الحالة:</strong> <span style="color: ${data.status === 'مكتملة' ? 'green' : (data.status === 'ملغي' ? 'red' : 'orange')}">${data.status || 'قيد الانتظار'}</span></p>
+                                
+                                <div class="actions">
+                                    <button class="btn btn-complete" onclick="updateStatus('${data.id}', 'مكتملة')">تحديد كمكتملة</button>
+                                    <button class="btn btn-cancel" onclick="updateStatus('${data.id}', 'ملغي')">إلغاء الحجز</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    container.innerHTML = html;
                 });
             } catch (error) {
-                listContainer.innerHTML = "<p style='text-align: center; color: #dc2626;'>حدث خطأ أثناء تحميل الحجوزات.</p>";
+                console.error("خطأ في جلب الحجوزات: ", error);
+                container.innerHTML = '<p class="no-data">حدث خطأ أثناء تحميل الحجوزات.</p>';
             }
         }
 
-        window.displayBookings = function(bookings) {
-            listContainer.innerHTML = "";
-            if (bookings.length === 0) {
-                listContainer.innerHTML = "<p style='text-align: center; color: var(--text-muted); padding: 20px;'>لا توجد حجوزات متاحة حالياً.</p>";
-                return;
-            }
-
-            bookings.forEach((data) => {
-                let addonsText = data.addons ? `<p><strong>الإضافات:</strong> ${data.addons}</p>` : '';
-                let washTypeHtml = data.wash_type ? `<p><strong>نوع الغسيل:</strong> ${data.wash_type}</p>` : '';
-
-                listContainer.innerHTML += `
-                    <div class="booking-card">
-                        <p><strong>اسم العميل:</strong> ${data.customer_name || 'غير متوفر'}</p>
-                        <p><strong>رقم الجوال:</strong> ${data.customer_phone || 'غير متوفر'}</p>
-                        <p><strong>رقم اللوحة:</strong> ${data.car_plate || 'غير متوفر'}</p>
-                        <p><strong>الفرع:</strong> <span style="color: #2563eb; font-weight: bold;">${data.branch || 'غير محدد'}</span></p>
-                        <p><strong>الخدمة / الباقة:</strong> ${data.service_name || 'غير متوفر'}</p>
-                        ${washTypeHtml}
-                        ${addonsText}
-                        <p><strong>التاريخ:</strong> ${data.appointment_date || ''} | <strong>الوقت:</strong> ${data.appointment_time || ''}</p>
-                        <p><strong>إيميل الحساب:</strong> ${data.user_email || 'غير متوفر'}</p>
-                        <p><strong>الحالة:</strong> <span style="color: #16a34a; font-weight: bold;">${data.status || 'مؤكد'}</span></p>
-                        <div class="actions">
-                            <button class="action-btn btn-complete" onclick="updateStatus('${data.id}', 'مكتملة')">تحديد كمكتملة</button>
-                            <button class="action-btn btn-cancel" onclick="updateStatus('${data.id}', 'ملغاة')">إلغاء الحجز</button>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        window.filterBookings = function(type, btn) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            const today = new Date().toISOString().split('T')[0];
-
-            if (type === 'upcoming') {
-                const filtered = allBookings.filter(b => b.appointment_date >= today && b.status !== 'ملغاة' && b.status !== 'مكتملة');
-                displayBookings(filtered);
-            } else if (type === 'completed') {
-                const filtered = allBookings.filter(b => b.status === 'مكتملة' || b.status === 'ملغاة' || b.appointment_date < today);
-                displayBookings(filtered);
-            } else {
-                displayBookings(allBookings);
-            }
-        }
-
+        // دالة تحديث الحالة بدون أي رسائل OK
         window.updateStatus = async function(docId, newStatus) {
             try {
                 const docRef = doc(db, "appointments", docId);
                 await updateDoc(docRef, { status: newStatus });
-                alert("تم تحديث حالة الحجز بنجاح!");
             } catch (error) {
-                alert("فشل تحديث الحالة.");
+                console.error("خطأ في تحديث الحالة: ", error);
             }
-        }
+        };
 
+        // زر تسجيل الخروج
         document.getElementById('logoutBtn').addEventListener('click', () => {
             signOut(auth).then(() => {
                 window.location.href = 'login.html';
             }).catch((error) => {
-                console.error("خطأ في تسجيل الخروج:", error);
+                console.error("خطأ أثناء تسجيل الخروج:", error);
             });
         });
     </script>
