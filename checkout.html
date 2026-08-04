@@ -92,39 +92,43 @@
             margin-top: 12px;
         }
 
-        /* تنسيق اختيار حجم السيارة الجديد */
-        .car-sizes {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .size-option {
-            border: 2px solid var(--border-color);
+        /* تنسيق قسم الخدمات الإضافية */
+        .addons-container {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 10px;
-            text-align: center;
-            cursor: pointer;
-            background: #fff;
-            transition: all 0.2s ease;
+            padding: 12px 15px;
+            margin: 15px 0;
         }
 
-        .size-option input {
-            display: none;
-        }
-
-        .size-option label {
-            cursor: pointer;
-            font-weight: 700;
+        .addons-title {
             font-size: 13px;
-            display: block;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
         }
 
-        .size-option.selected, .size-option:hover {
-            border-color: var(--primary);
-            background: #eff6ff;
-            color: var(--primary);
+        .addon-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 6px;
+            cursor: pointer;
+        }
+
+        .addon-item label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .addon-item input {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
         }
 
         .payment-options {
@@ -217,38 +221,39 @@
 
     <div class="header">
         <h1>إتمام عملية الدفع</h1>
-        <p>حدد حجم سيارتك واشرع في تأكيد طلبك</p>
+        <p>راجع تفاصيل طلبك وأتمم السداد لتأكيد الموعد</p>
     </div>
 
     <div class="container">
-        <!-- ملخص الطلب وحجم السيارة -->
+        <!-- ملخص الطلب -->
         <div class="card">
             <h3>📋 ملخص تفاصيل الطلب</h3>
             <div class="summary-row">
                 <span id="serviceTitle">جاري تحميل الخدمة...</span>
                 <span id="basePriceDisplay">0.00 ر.س</span>
             </div>
+            <div class="summary-row">
+                <span>حجم السيارة المختاره</span>
+                <span id="carSizeDisplay">-</span>
+            </div>
 
-            <div style="margin: 15px 0 5px 0; font-weight: 700; font-size: 13px;">اختر حجم السيارة:</div>
-            <div class="car-sizes">
-                <div class="size-option selected" onclick="updateCarSize('صغيرة', 0, this)">
-                    <input type="radio" name="carSize" value="صغيرة" checked>
-                    <label>صغيرة (سدان)<br><span style="font-size:11px; color:#64748b;">بدون زيادة</span></label>
+            <!-- إضافات اختيارية (تلبيس دعاسات ونانو واكس) -->
+            <div class="addons-container">
+                <div class="addons-title">✨ خدمات إضافية اختيارية:</div>
+                <div class="addon-item">
+                    <label>
+                        <input type="checkbox" id="addonMats" value="تلبيس دعاسات" data-price="5" onchange="updateTotal()"> تلبيس دعاسات
+                    </label>
+                    <span>5 ر.س</span>
                 </div>
-                <div class="size-option" onclick="updateCarSize('متوسطة', 15, this)">
-                    <input type="radio" name="carSize" value="متوسطة">
-                    <label>متوسطة (جيب صغير)<br><span style="font-size:11px; color:#64748b;">+15 ر.س</span></label>
-                </div>
-                <div class="size-option" onclick="updateCarSize('كبيرة', 30, this)">
-                    <input type="radio" name="carSize" value="كبيرة">
-                    <label>كبيرة (عائلية/فان)<br><span style="font-size:11px; color:#64748b;">+30 ر.س</span></label>
+                <div class="addon-item">
+                    <label>
+                        <input type="checkbox" id="addonNano" value="نانو واكس" data-price="5" onchange="updateTotal()"> نانو واكس
+                    </label>
+                    <span>5 ر.س</span>
                 </div>
             </div>
 
-            <div class="summary-row" style="margin-top: 15px;">
-                <span>رسوم حجم السيارة الإضافية</span>
-                <span id="extraSizePrice">0.00 ر.س</span>
-            </div>
             <div class="summary-row total">
                 <span>الإجمالي المستحق</span>
                 <span id="totalPrice">0.00 ر.س</span>
@@ -304,38 +309,29 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // جلب بيانات الحجز المؤقتة
+        // جلب بيانات الحجز المرسلة من صفحة booking.html
         let bookingData = JSON.parse(localStorage.getItem('tempBooking')) || {
             serviceName: "غسيل سيارة متنقل",
-            price: 50,
-            carType: "صغيرة",
+            price: 15,
+            carSize: "الصغيرة",
             date: "اليوم",
             time: "حسب الموعد"
         };
 
-        let basePrice = Number(bookingData.price) || 50;
-        let currentExtra = 0;
-        let selectedSizeName = "صغيرة";
+        let basePrice = Number(bookingData.price) || 15;
 
         document.getElementById('serviceTitle').innerText = `${bookingData.serviceName}`;
+        document.getElementById('carSizeDisplay').innerText = bookingData.carSize || "الصغيرة";
         document.getElementById('basePriceDisplay').innerText = `${basePrice} ر.س`;
-        updateTotalDisplay();
+        updateTotal();
 
-        window.updateCarSize = function(sizeName, extraAmount, element) {
-            selectedSizeName = sizeName;
-            currentExtra = extraAmount;
+        window.updateTotal = function() {
+            let addonsTotal = 0;
+            if (document.getElementById('addonMats').checked) addonsTotal += 5;
+            if (document.getElementById('addonNano').checked) addonsTotal += 5;
 
-            // تحديث التصميم البصري للخيارات
-            document.querySelectorAll('.size-option').forEach(opt => opt.classList.remove('selected'));
-            element.classList.add('selected');
-            element.querySelector('input').checked = true;
-
-            updateTotalDisplay();
-        }
-
-        function updateTotalDisplay() {
-            document.getElementById('extraSizePrice').innerText = `${currentExtra} ر.س`;
-            document.getElementById('totalPrice').innerText = `${basePrice + currentExtra} ر.س`;
+            const finalTotal = basePrice + addonsTotal;
+            document.getElementById('totalPrice').innerText = `${finalTotal} ر.س`;
         }
 
         window.toggleBankInfo = function(show) {
@@ -357,9 +353,19 @@
             payBtn.innerText = "جاري إتمام الطلب وتوثيق الدفع...";
 
             const selectedPayment = document.querySelector('input[name="payment"]:checked').value;
-            const finalTotalPrice = basePrice + currentExtra;
+            
+            let selectedAddons = [];
+            if (document.getElementById('addonMats').checked) selectedAddons.push("تلبيس دعاسات (5 ر.س)");
+            if (document.getElementById('addonNano').checked) selectedAddons.push("نانو واكس (5 ر.س)");
+
+            let addonsTotal = 0;
+            if (document.getElementById('addonMats').checked) addonsTotal += 5;
+            if (document.getElementById('addonNano').checked) addonsTotal += 5;
+
+            const finalTotalPrice = basePrice + addonsTotal;
 
             try {
+                // حفظ البيانات في Firebase وتأكيد الحجز حصرياً بعد الدفع
                 await addDoc(collection(db, "appointments"), {
                     user_email: currentUser.email,
                     name: bookingData.name || "عميل",
@@ -367,8 +373,9 @@
                     plate: bookingData.plate || "",
                     branch: bookingData.branch || "ينبع",
                     service_name: bookingData.serviceName,
+                    car_size: bookingData.carSize,
+                    addons: selectedAddons.join(', ') || 'لا توجد',
                     price: finalTotalPrice,
-                    car_size: selectedSizeName,
                     date: bookingData.date || "",
                     time: bookingData.time || "",
                     payment_method: selectedPayment,
