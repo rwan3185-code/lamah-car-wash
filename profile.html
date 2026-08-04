@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حسابي - مغسلة لمعة ونقاء</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .user-icon {
+            font-size: 50px;
+            color: var(--primary);
+            background: #eff6ff;
+            width: 90px;
+            height: 90px;
+            line-height: 90px;
+            border-radius: 50%;
+            margin: 0 auto 20px auto;
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        .info-card {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            text-align: right;
+        }
+
+        .info-card label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .info-card p {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .btn-back {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+            box-sizing: border-box;
+            transition: background-color 0.2s;
+        }
+
+        .btn-back:hover {
+            background-color: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="user-icon">
+            <i class="fa-solid fa-user"></i>
+        </div>
+        <h2>معلومات الحساب</h2>
+
+        <div class="info-card">
+            <label>البريد الإلكتروني:</label>
+            <p id="userEmail">جاري التحميل...</p>
+        </div>
+
+        <div class="info-card">
+            <label>كلمة المرور:</label>
+            <p>••••••••••••</p>
+        </div>
+
+        <div class="info-card">
+            <label>تاريخ الانضمام (إنشاء الحساب):</label>
+            <p id="joinDate">جاري التحميل...</p>
+        </div>
+
+        <a href="index.html" class="btn-back">العودة للرئيسية</a>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBoOYPofBjLF8w9RwusNUVXf-ZiFgklx8c",
+            authDomain: "car-wash-a68b2.firebaseapp.com",
+            projectId: "car-wash-a68b2",
+            storageBucket: "car-wash-a68b2.firebasestorage.app",
+            messagingSenderId: "560347437788",
+            appId: "1:560347437788:web:e4071b760637a240577219",
+            measurementId: "G-4SNK4CLCR1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                // إذا لم يكن مسجل دخول، حوله لصفحة تسجيل الدخول
+                window.location.href = 'login.html';
+            } else {
+                // عرض البريد الإلكتروني
+                document.getElementById('userEmail').textContent = user.email;
+
+                // استخراج تاريخ إنشاء الحساب من فايربيس وتنسيقه بشكل واضح
+                if (user.metadata && user.metadata.creationTime) {
+                    const date = new Date(user.metadata.creationTime);
+                    document.getElementById('joinDate').textContent = date.toLocaleDateString('ar-SA', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                } else {
+                    document.getElementById('joinDate').textContent = "غير متوفر";
+                }
+            }
+        });
+    </script>
+</body>
+</html>
