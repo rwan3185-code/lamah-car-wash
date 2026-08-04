@@ -54,6 +54,10 @@
             cursor: pointer;
         }
 
+        .logout-btn:hover {
+            background-color: #b91c1c;
+        }
+
         .tabs {
             display: flex;
             gap: 10px;
@@ -143,7 +147,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, updateDoc, doc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBoOYPofBjLF8w9RwusNUVXf-ZiFgklx8c",
@@ -159,28 +163,45 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const ADMIN_EMAIL = "rwan3185@gmail.com"; // يجب أن يتطابق مع الإيميل في صفحة الدخول
+        const ADMIN_EMAIL = "rwan3185@gmail.com";
         const listContainer = document.getElementById('adminBookingsList');
         let allBookings = [];
+        let previousCount = null; // لمتابعة عدد الحجوزات للتنبيه
 
-        // حماية الصفحة: التأكد أن المستخدم هو التاجر فعلياً
+        // حماية الصفحة والتأكد من إيميل الأدمن
         onAuthStateChanged(auth, (user) => {
             if (!user || user.email !== ADMIN_EMAIL) {
-                // إذا لم يكن مسجلاً أو لم يكن هو التاجر، يُحوّل لصفحة تسجيل الدخول
                 window.location.href = 'login.html';
             } else {
-                fetchBookings();
+                initRealtimeBookings();
             }
         });
 
-        async function fetchBookings() {
+        // استخدام onSnapshot لجلب الحجوزات وتحديثها وإرسال تنبيه فوراً عند إضافة حجز جديد
+        function initRealtimeBookings() {
             try {
-                const querySnapshot = await getDocs(collection(db, "appointments"));
-                allBookings = [];
-                querySnapshot.forEach((document) => {
-                    allBookings.push({ id: document.id, ...document.data() });
+                onSnapshot(collection(db, "appointments"), (querySnapshot) => {
+                    allBookings = [];
+                    querySnapshot.forEach((document) => {
+                        allBookings.push({ id: document.id, ...document.data() });
+                    });
+
+                    // التحقق إذا تم إضافة حجز جديد لإصدار تنبيه
+                    if (previousCount !== null && allBookings.length > previousCount) {
+                        alert("🔔 تنبيه: تم استلام حجز جديد!");
+                    }
+                    previousCount = allBookings.length;
+
+                    // عرض الحجوزات حسب التاب النشط حالياً
+                    const activeTab = document.querySelector('.tab-btn.active');
+                    if (activeTab && activeTab.textContent.includes('القادمة')) {
+                        filterBookings('upcoming', activeTab);
+                    } else if (activeTab && activeTab.textContent.includes('السابقة')) {
+                        filterBookings('completed', activeTab);
+                    } else {
+                        displayBookings(allBookings);
+                    }
                 });
-                displayBookings(allBookings);
             } catch (error) {
                 listContainer.innerHTML = "<p style='text-align: center; color: #dc2626;'>حدث خطأ أثناء تحميل الحجوزات.</p>";
             }
@@ -189,11 +210,14 @@
         window.displayBookings = function(bookings) {
             listContainer.innerHTML = "";
             if (bookings.length === 0) {
-                listContainer.innerHTML = "<p style='text-align: center; color: var(--text-muted);'>لا توجد حجوزات متاحة حالياً.</p>";
+                listContainer.innerHTML = "<p style='text-align: center; color: var(--text-muted); padding: 20px;'>لا توجد حجوزات متاحة حالياً.</p>";
                 return;
             }
 
             bookings.forEach((data) => {
+                let addonsText = data.addons ? `<p><strong>الإضافات:</strong> ${data.addons}</p>` : '';
+                let washTypeHtml = data.wash_type ? `<p><strong>نوع الغسيل:</strong> ${data.wash_type}</p>` : '';
+
                 listContainer.innerHTML += `
                     <div class="booking-card">
                         <p><strong>اسم العميل:</strong> ${data.customer_name || 'غير متوفر'}</p>
@@ -201,7 +225,10 @@
                         <p><strong>رقم اللوحة:</strong> ${data.car_plate || 'غير متوفر'}</p>
                         <p><strong>الفرع:</strong> <span style="color: #2563eb; font-weight: bold;">${data.branch || 'غير محدد'}</span></p>
                         <p><strong>الخدمة / الباقة:</strong> ${data.service_name || 'غير متوفر'}</p>
-                        <p><strong>التاريخ:</strong> ${data.appointment_date} | <strong>الوقت:</strong> ${data.appointment_time}</p>
+                        ${washTypeHtml}
+                        ${addonsText}
+                        <p><strong>التاريخ:</strong> ${data.appointment_date || ''} | <strong>الوقت:</strong> ${data.appointment_time || ''}</p>
+                        <p><strong>إيميل الحساب:</strong> ${data.user_email || 'غير متوفر'}</p>
                         <p><strong>الحالة:</strong> <span style="color: #16a34a; font-weight: bold;">${data.status || 'مؤكد'}</span></p>
                         <div class="actions">
                             <button class="action-btn btn-complete" onclick="updateStatus('${data.id}', 'مكتملة')">تحديد كمكتملة</button>
@@ -234,7 +261,6 @@
                 const docRef = doc(db, "appointments", docId);
                 await updateDoc(docRef, { status: newStatus });
                 alert("تم تحديث حالة الحجز بنجاح!");
-                fetchBookings();
             } catch (error) {
                 alert("فشل تحديث الحالة.");
             }
@@ -243,6 +269,8 @@
         document.getElementById('logoutBtn').addEventListener('click', () => {
             signOut(auth).then(() => {
                 window.location.href = 'login.html';
+            }).catch((error) => {
+                console.error("خطأ في تسجيل الخروج:", error);
             });
         });
     </script>
