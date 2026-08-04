@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الباقات الشهرية - مغسلة لمعة ونقاء</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>اشتراك شهري - مغسلة لمعة ونقاء المتنقلة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --accent: #f59e0b;
             --bg-color: #f8fafc;
             --card-bg: #ffffff;
             --text-main: #1e293b;
             --text-muted: #64748b;
-            --border-color: #cbd5e1;
+            --border-color: #e2e8f0;
         }
 
         body {
@@ -22,352 +22,238 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
+            padding: 0;
+            padding-bottom: 40px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), #1e293b);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .header p {
+            margin: 5px 0 0 0;
+            font-size: 13px;
+            color: #93c5fd;
         }
 
         .container {
-            width: 100%;
             max-width: 600px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .card {
             background: var(--card-bg);
-            padding: 30px;
             border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-            box-sizing: border-box;
-        }
-
-        h2 {
-            text-align: center;
-            color: var(--primary);
-            font-weight: 700;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-
-        .policy-box {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            border-right: 4px solid var(--primary);
-            padding: 14px;
-            margin-bottom: 25px;
-            border-radius: 10px;
-        }
-
-        .policy-box h4 {
-            margin: 0 0 8px 0;
-            color: var(--primary-dark);
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .policy-box ul {
-            margin: 0;
-            padding-right: 18px;
-            font-size: 12px;
-            color: #334155;
-            line-height: 1.6;
-        }
-
-        .policy-box li {
-            margin-bottom: 4px;
-        }
-
-        .packages-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .package-card {
-            background: #ffffff;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
             padding: 20px;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
         }
 
-        .package-card:hover {
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
-        }
-
-        .package-card i {
-            font-size: 30px;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-
-        .package-card h3 {
-            margin: 0 0 8px 0;
-            font-size: 18px;
-            color: var(--text-main);
-        }
-
-        .package-card p {
-            margin: 0 0 15px 0;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .package-card .price {
-            font-weight: 700;
-            color: var(--primary);
+        .card h3 {
+            margin-top: 0;
             font-size: 16px;
+            color: var(--primary);
+            border-bottom: 2px solid #eff6ff;
+            padding-bottom: 10px;
             margin-bottom: 15px;
-        }
-
-        .btn-select-pkg {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 8px;
-            font-family: 'Cairo', sans-serif;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .btn-select-pkg:hover {
-            background-color: var(--primary-dark);
-        }
-
-        .hidden {
-            display: none;
         }
 
         label {
             display: block;
             margin-bottom: 6px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-main);
         }
 
         input, select {
             width: 100%;
-            padding: 12px 14px;
-            margin-bottom: 16px;
+            padding: 12px;
+            margin-bottom: 15px;
             border: 1px solid var(--border-color);
             border-radius: 10px;
             font-family: 'Cairo', sans-serif;
             font-size: 14px;
             background-color: #fff;
             box-sizing: border-box;
-            transition: all 0.3s ease;
         }
 
         input:focus, select:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
         }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            border: none;
+        .price-preview {
+            background: #eff6ff;
+            color: var(--primary);
+            padding: 10px 15px;
             border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
             font-family: 'Cairo', sans-serif;
             font-size: 16px;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
-            transition: background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 6px 15px rgba(30, 58, 138, 0.3);
+            transition: background 0.2s;
+            text-align: center;
         }
 
-        button[type="submit"] {
-            background-color: var(--primary);
-            color: white;
-            margin-top: 10px;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        .btn-submit:hover {
+            background: #1e293b;
         }
 
-        button[type="submit"]:hover {
-            background-color: var(--primary-dark);
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
         }
 
-        .back-btn {
-            background-color: #f1f5f9;
-            color: var(--text-main);
-            margin-top: 12px;
-            border: 1px solid var(--border-color);
-        }
-
-        .back-btn:hover {
-            background-color: #e2e8f0;
-        }
-
-        button:active {
-            transform: scale(0.98);
+        .back-link:hover {
+            color: var(--primary);
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- قسم عرض مربعات الباقات -->
-        <div id="packagesView">
-            <h2>باقات العناية الشهرية</h2>
-
-            <div class="policy-box">
-                <h4>سياسة الاشتراك:</h4>
-                <ul>
-                    <li>يبدأ الاشتراك من أول غسلة وينتهي بعد إكمال 4 غسلات.</li>
-                    <li>يمكن استخدام الاشتراك لأكثر من سيارة.</li>
-                    <li>يحق للمغسلة تعديل المواعيد عند الظروف الطارئة مع إشعار العميل.</li>
-                    <li>عند التجديد، يحصل العميل على غسلة إضافية مجاناً (حسب العروض السارية).</li>
-                </ul>
-            </div>
-
-            <div class="packages-grid">
-                <div class="package-card" onclick="selectPackage('باقة شهرية (4 غسلات)')">
-                    <i class="fa-solid fa-box-open"></i>
-                    <h3>الباقة الشهرية الأساسية</h3>
-                    <p>اشتراك 4 غسلات مع غسلة إضافية مجانية عند التجديد.</p>
-                    <div class="price">مواعيد أسبوعية ثابتة</div>
-                    <button class="btn-select-pkg">اختر الباقة</button>
-                </div>
-            </div>
-
-            <button class="back-btn" onclick="window.location.href='index.html'">العودة للرئيسية</button>
-        </div>
-
-        <!-- قسم نموذج تفاصيل الحجز (يظهر بعد اختيار الباقة) -->
-        <div id="formView" class="hidden">
-            <h2 id="selectedPackageTitle">تأكيد الاشتراك</h2>
-            
-            <form id="subscriptionForm">
-                <label>اسم المشترك:</label>
-                <input type="text" id="customer_name" placeholder="أدخل اسمك الكريم" required>
-
-                <label>رقم الجوال:</label>
-                <input type="tel" id="customer_phone" placeholder="05xxxxxxxx" required>
-
-                <label>رقم لوحة السيارة:</label>
-                <input type="text" id="car_plate" placeholder="مثال: أ ب ج 1234" required>
-
-                <label>اختر الفرع:</label>
-                <select id="branch" required>
-                    <option value="" disabled selected>اختر الفرع المطلوب</option>
-                    <option value="ينبع البلد">ينبع البلد</option>
-                    <option value="ينبع الصناعية / الهيئة">ينبع الصناعية / الهيئة</option>
-                </select>
-
-                <!-- الخيار الجديد لنوع الغسيل -->
-                <label>نوع الغسيل:</label>
-                <select id="wash_type" required>
-                    <option value="" disabled selected>اختر نوع الغسيل</option>
-                    <option value="غسيل داخلي وخارجي">غسيل داخلي وخارجي</option>
-                    <option value="غسيل خارجي فقط">غسيل خارجي فقط</option>
-                </select>
-
-                <label>تاريخ بداية الاشتراك (أول غسلة):</label>
-                <input type="date" id="start_date" required>
-
-                <label>وقت الموعد الثابت أسبوعياً (من 4 عصراً إلى 12 ليلاً):</label>
-                <input type="time" id="appointment_time" required>
-
-                <button type="submit">تأكيد الاشتراك الشهري</button>
-            </form>
-            
-            <button class="back-btn" onclick="goBackToPackages()">الرجوع لاختيار الباقات</button>
-        </div>
+    <div class="header">
+        <h1>اشتراك المغسلة الشهري</h1>
+        <p>عرض للمشتركين الأعضاء: نهديك غسلة مجانية عند تفعيل أو تجديد الاشتراك!</p>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+    <div class="container">
+        <form id="subscriptionForm">
+            <!-- بيانات العميل والسيارة -->
+            <div class="card">
+                <h3>🚗 بيانات المشترك والسيارة</h3>
+                
+                <label>اسم المشترك:</label>
+                <input type="text" id="clientName" placeholder="أدخل اسمك الكريم" required>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBoOYPofBjLF8w9RwusNUVXf-ZiFgklx8c",
-            authDomain: "car-wash-a68b2.firebaseapp.com",
-            projectId: "car-wash-a68b2",
-            storageBucket: "car-wash-a68b2.firebasestorage.app",
-            messagingSenderId: "560347437788",
-            appId: "1:560347437788:web:e4071b760637a240577219",
-            measurementId: "G-4SNK4CLCR1"
+                <label>رقم الجوال:</label>
+                <input type="tel" id="clientPhone" placeholder="05xxxxxxxx" required>
+
+                <label>رقم لوحة السيارة:</label>
+                <input type="text" id="carPlate" placeholder="مثال: أ ب ج 1234" required>
+
+                <label>اختر الفرع:</label>
+                <select id="branchSelect" required>
+                    <option value="">اختر الفرع المطلوب</option>
+                    <option value="ينبع الصناعية / الهيئة">ينبع الصناعية / الهيئة</option>
+                    <option value="ينبع البلد">ينبع البلد</option>
+                </select>
+            </div>
+
+            <!-- تفاصيل الاشتراك وأسعار الباقات الشهرية -->
+            <div class="card">
+                <h3>📅 تفاصيل باقة الاشتراك الشهري</h3>
+
+                <label>نوع الغسيل للاشتراك:</label>
+                <select id="serviceSelect" required onchange="calculateTotal()">
+                    <option value="">اختر نوع الغسيل</option>
+                    <option value="اشتراك غسيل داخلي وخارجي">اشتراك غسيل داخلي وخارجي</option>
+                    <option value="اشتراك غسيل خارجي">اشتراك غسيل خارجي</option>
+                </select>
+
+                <label>حجم السيارة:</label>
+                <select id="carSizeSelect" required onchange="calculateTotal()">
+                    <option value="">اختر حجم السيارة</option>
+                    <option value="الصغيرة">الصغيرة</option>
+                    <option value="الوسط">الوسط</option>
+                    <option value="الكبيرة">الكبيرة</option>
+                </select>
+
+                <div class="price-preview" id="pricePreviewText">سعر الاشتراك الإجمالي: 0 ر.س</div>
+
+                <label>تاريخ بداية الاشتراك (أول غسلة):</label>
+                <input type="date" id="startDate" required>
+
+                <label>وقت الموعد الثابت أسبوعياً (من 4 عصراً إلى 12 ليلاً):</label>
+                <input type="time" id="startTime" required>
+            </div>
+
+            <button type="submit" class="btn-submit">الانتقال لصفحة الدفع لتفعيل الاشتراك</button>
+            <a href="index.html" class="back-link">← العودة للرئيسية</a>
+        </form>
+    </div>
+
+    <script>
+        // جدول أسعار الاشتراكات الشهرية بناءً على الصورة المعتمدة
+        const subscriptionPrices = {
+            "اشتراك غسيل داخلي وخارجي": { "الصغيرة": 90, "الوسط": 108, "الكبيرة": 126 },
+            "اشتراك غسيل خارجي": { "الصغيرة": 57, "الوسط": 76, "الكبيرة": 95 }
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        function calculateTotal() {
+            const service = document.getElementById('serviceSelect').value;
+            const size = document.getElementById('carSizeSelect').value;
+            let price = 0;
 
-        onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                window.location.href = 'login.html';
+            if (service && size && subscriptionPrices[service] && subscriptionPrices[service][size]) {
+                price = subscriptionPrices[service][size];
             }
-        });
 
-        let chosenPackageName = "";
+            document.getElementById('pricePreviewText').innerText = `سعر الاشتراك الإجمالي: ${price} ر.س`;
+            return price;
+        }
 
-        window.selectPackage = function(packageName) {
-            chosenPackageName = packageName;
-            document.getElementById('selectedPackageTitle').textContent = "اشتراك: " + packageName;
-            document.getElementById('packagesView').classList.add('hidden');
-            document.getElementById('formView').classList.remove('hidden');
-        };
+        // تحديد تاريخ اليوم كحد أدنى لبداية الاشتراك
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('startDate').min = today;
 
-        window.goBackToPackages = function() {
-            document.getElementById('formView').classList.add('hidden');
-            document.getElementById('packagesView').classList.remove('hidden');
-        };
-
-        const form = document.getElementById('subscriptionForm');
-        form.addEventListener('submit', async (e) => {
+        document.getElementById('subscriptionForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const customerName = document.getElementById('customer_name').value;
-            const customerPhone = document.getElementById('customer_phone').value;
-            const carPlate = document.getElementById('car_plate').value;
-            const branch = document.getElementById('branch').value;
-            const washType = document.getElementById('wash_type').value;
-            const startDate = document.getElementById('start_date').value;
-            const appointmentTime = document.getElementById('appointment_time').value;
+            const service = document.getElementById('serviceSelect').value;
+            const size = document.getElementById('carSizeSelect').value;
+            const finalPrice = calculateTotal();
 
-            if (appointmentTime < "16:00" && appointmentTime > "00:00") {
-                alert('عذراً، أوقات العمل تبدأ من الساعة 4:00 عصراً وحتى 12:00 ليلاً.');
-                return;
-            }
+            const subscriptionDetails = {
+                name: document.getElementById('clientName').value,
+                phone: document.getElementById('clientPhone').value,
+                plate: document.getElementById('carPlate').value,
+                branch: document.getElementById('branchSelect').value,
+                serviceName: service,
+                carSize: size,
+                addons: "اشتراك شهري (يشمل غسلة مجانية)",
+                price: finalPrice,
+                date: document.getElementById('startDate').value,
+                time: document.getElementById('startTime').value
+            };
 
-            try {
-                const dateQuery = startDate + " (بداية الاشتراك - يتكرر أسبوعياً)";
-                const qCheck = query(collection(db, "appointments"), where("appointment_date", "==", dateQuery));
-                const existingBookings = await getDocs(qCheck);
-
-                if (existingBookings.size >= 9) {
-                    alert('عذراً، هذا اليوم مكتمل بالكامل (الحد الأقصى 9 حجوزات). يرجى اختيار تاريخ بداية آخر.');
-                    return;
-                }
-
-                await addDoc(collection(db, "appointments"), {
-                    customer_name: customerName,
-                    customer_phone: customerPhone,
-                    car_plate: carPlate,
-                    branch: branch,
-                    wash_type: washType,
-                    service_name: chosenPackageName,
-                    appointment_date: dateQuery,
-                    appointment_time: appointmentTime,
-                    user_email: auth.currentUser ? auth.currentUser.email : "",
-                    status: "اشتراك مفعل (4 غسلات)",
-                    createdAt: new Date()
-                });
-
-                alert('تم تفعيل اشتراكك الشهري بنجاح وتثبيت الموعد الأسبوعي!');
-                window.location.href = 'confirmation.html';
-            } catch (error) {
-                console.error("خطأ أثناء الحفظ: ", error);
-                alert('حدث خطأ، حاول مرة أخرى.');
-            }
+            // تخزين البيانات مؤقتاً والانتقال حصرياً لصفحة الدفع
+            localStorage.setItem('tempBooking', JSON.stringify(subscriptionDetails));
+            window.location.href = 'checkout.html';
         });
     </script>
 </body>
