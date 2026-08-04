@@ -92,6 +92,41 @@
             margin-top: 12px;
         }
 
+        /* تنسيق اختيار حجم السيارة الجديد */
+        .car-sizes {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .size-option {
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            background: #fff;
+            transition: all 0.2s ease;
+        }
+
+        .size-option input {
+            display: none;
+        }
+
+        .size-option label {
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+            display: block;
+        }
+
+        .size-option.selected, .size-option:hover {
+            border-color: var(--primary);
+            background: #eff6ff;
+            color: var(--primary);
+        }
+
         .payment-options {
             display: grid;
             grid-template-columns: 1fr;
@@ -131,7 +166,6 @@
             width: 100%;
         }
 
-        /* تفاصيل التحويل البنكي */
         .bank-details {
             display: none;
             margin-top: 15px;
@@ -183,20 +217,37 @@
 
     <div class="header">
         <h1>إتمام عملية الدفع</h1>
-        <p>اختر وسيلة الدفع المتاحة لتأكيد طلبك</p>
+        <p>حدد حجم سيارتك واشرع في تأكيد طلبك</p>
     </div>
 
     <div class="container">
-        <!-- ملخص الطلب -->
+        <!-- ملخص الطلب وحجم السيارة -->
         <div class="card">
             <h3>📋 ملخص تفاصيل الطلب</h3>
             <div class="summary-row">
                 <span id="serviceTitle">جاري تحميل الخدمة...</span>
-                <span id="servicePrice">0.00 ر.س</span>
+                <span id="basePriceDisplay">0.00 ر.س</span>
             </div>
-            <div class="summary-row">
-                <span>رسوم الخدمة والزيارة المتنقلة</span>
-                <span>متضمنة</span>
+
+            <div style="margin: 15px 0 5px 0; font-weight: 700; font-size: 13px;">اختر حجم السيارة:</div>
+            <div class="car-sizes">
+                <div class="size-option selected" onclick="updateCarSize('صغيرة', 0, this)">
+                    <input type="radio" name="carSize" value="صغيرة" checked>
+                    <label>صغيرة (سدان)<br><span style="font-size:11px; color:#64748b;">بدون زيادة</span></label>
+                </div>
+                <div class="size-option" onclick="updateCarSize('متوسطة', 15, this)">
+                    <input type="radio" name="carSize" value="متوسطة">
+                    <label>متوسطة (جيب صغير)<br><span style="font-size:11px; color:#64748b;">+15 ر.س</span></label>
+                </div>
+                <div class="size-option" onclick="updateCarSize('كبيرة', 30, this)">
+                    <input type="radio" name="carSize" value="كبيرة">
+                    <label>كبيرة (عائلية/فان)<br><span style="font-size:11px; color:#64748b;">+30 ر.س</span></label>
+                </div>
+            </div>
+
+            <div class="summary-row" style="margin-top: 15px;">
+                <span>رسوم حجم السيارة الإضافية</span>
+                <span id="extraSizePrice">0.00 ر.س</span>
             </div>
             <div class="summary-row total">
                 <span>الإجمالي المستحق</span>
@@ -204,7 +255,7 @@
             </div>
         </div>
 
-        <!-- طرق الدفع (Apple Pay أو تحويل بنكي فقط) -->
+        <!-- طرق الدفع -->
         <div class="card">
             <h3>💳 حدد طريقة الدفع</h3>
             <div class="payment-options">
@@ -222,12 +273,11 @@
                 </div>
             </div>
 
-            <!-- معلومات الحساب البنكي تظهر عند اختيار التحويل -->
             <div id="bankInfoBox" class="bank-details">
                 <strong>حساباتنا البنكية للتحويل:</strong><br>
                 - مصرف الراجحي: <code>SA0380000000608010101019</code><br>
                 - بنك الإنماء: <code>SA9205000010203040506070</code><br>
-                <em>يرجى إتمام التحويل وإرفاق الإيصال أو حفظ العملية لتأكيد الطلب.</em>
+                <em>يرجى إتمام التحويل وحفظ العملية لتأكيد الطلب.</em>
             </div>
         </div>
 
@@ -254,18 +304,39 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // جلب تفاصيل الحجز المخزنة مؤقتاً
-        const bookingData = JSON.parse(localStorage.getItem('tempBooking')) || {
+        // جلب بيانات الحجز المؤقتة
+        let bookingData = JSON.parse(localStorage.getItem('tempBooking')) || {
             serviceName: "غسيل سيارة متنقل",
             price: 50,
-            carType: "عادي",
+            carType: "صغيرة",
             date: "اليوم",
-            time: "حسب الموعد المحدد"
+            time: "حسب الموعد"
         };
 
-        document.getElementById('serviceTitle').innerText = `${bookingData.serviceName} (${bookingData.carType})`;
-        document.getElementById('servicePrice').innerText = `${bookingData.price} ر.س`;
-        document.getElementById('totalPrice').innerText = `${bookingData.price} ر.س`;
+        let basePrice = Number(bookingData.price) || 50;
+        let currentExtra = 0;
+        let selectedSizeName = "صغيرة";
+
+        document.getElementById('serviceTitle').innerText = `${bookingData.serviceName}`;
+        document.getElementById('basePriceDisplay').innerText = `${basePrice} ر.س`;
+        updateTotalDisplay();
+
+        window.updateCarSize = function(sizeName, extraAmount, element) {
+            selectedSizeName = sizeName;
+            currentExtra = extraAmount;
+
+            // تحديث التصميم البصري للخيارات
+            document.querySelectorAll('.size-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            element.querySelector('input').checked = true;
+
+            updateTotalDisplay();
+        }
+
+        function updateTotalDisplay() {
+            document.getElementById('extraSizePrice').innerText = `${currentExtra} ر.س`;
+            document.getElementById('totalPrice').innerText = `${basePrice + currentExtra} ر.س`;
+        }
 
         window.toggleBankInfo = function(show) {
             document.getElementById('bankInfoBox').style.display = show ? 'block' : 'none';
@@ -286,18 +357,22 @@
             payBtn.innerText = "جاري إتمام الطلب وتوثيق الدفع...";
 
             const selectedPayment = document.querySelector('input[name="payment"]:checked').value;
+            const finalTotalPrice = basePrice + currentExtra;
 
             try {
-                // حفظ البيانات في قاعدة بيانات Firebase
                 await addDoc(collection(db, "appointments"), {
                     user_email: currentUser.email,
+                    name: bookingData.name || "عميل",
+                    phone: bookingData.phone || "",
+                    plate: bookingData.plate || "",
+                    branch: bookingData.branch || "ينبع",
                     service_name: bookingData.serviceName,
-                    price: bookingData.price,
-                    car_type: bookingData.carType,
-                    date: bookingData.date,
-                    time: bookingData.time,
+                    price: finalTotalPrice,
+                    car_size: selectedSizeName,
+                    date: bookingData.date || "",
+                    time: bookingData.time || "",
                     payment_method: selectedPayment,
-                    status: "تم الدفع وتأكيد الموعد",
+                    status: "قيد الانتظار",
                     created_at: new Date().toISOString()
                 });
 
